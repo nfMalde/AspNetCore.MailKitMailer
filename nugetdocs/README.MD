@@ -278,7 +278,20 @@ The tag supports caching. It will  cache if an memory cache is registered the re
 If an distributed cache is registerted it will prefer this.
 
 To force the use of memory cache you can set `force-memory-cache` to `true`.
-         
+
+#### Url Helper
+AspNetCore.MailKitMailer comes with an UrlHelper to provide AbsoluteUrls for mail bodies.
+
+Usage: 
+
+```C#
+href="@Url.MailerAbsoluteAction("Index","Home")"
+
+```
+
+This will generate an absolute url to the action `Index` of Controller `Home`.
+See  https://github.com/nfMalde/AspNetCore.MailKitMailer/blob/main/src/AspNetCore.MailKitMailer/Helper/UrlHelper.cs for more info.
+
 
 #### Examples 
 There is an fully working example .net core project located at https://github.com/nfMalde/AspNetCore.MailKitMailer/examples/MailKitMailerExample.
