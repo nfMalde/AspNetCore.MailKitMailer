@@ -213,7 +213,7 @@ namespace AspNetCore.MailKitMailer.Data
            
     
             // Attachments
-            if (!result.Attachments.IsEmpty())
+            if (result.Attachments != null && !result.Attachments.IsEmpty())
             {
                 foreach(var attachment in result.Attachments)
                 {
