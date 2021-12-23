@@ -6,7 +6,10 @@
 This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET Core 3.1+
 
 # Third Party Dependencies
-
+[MailKit](https://github.com/jstedfast/MailKit)
+[Json.NET](https://www.newtonsoft.com/json)
+[XUnit](https://xunit.net/)
+[Nunit](https://docs.nunit.org/index.html)
 
 ## Install
 Using the nuget package manager:
