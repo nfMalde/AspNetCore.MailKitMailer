@@ -21,7 +21,7 @@ jobs:
         uses: rohith/publish-nuget@v2
         with:
           # Filepath of the project to be packaged, relative to root of repository
-          PROJECT_FILE_PATH: AspNetCore.MailKitMailer/src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
+          PROJECT_FILE_PATH: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
           # NuGet package id, used for version detection & defaults to project name
           # PACKAGE_NAME: Core
           
@@ -41,7 +41,7 @@ jobs:
           TAG_FORMAT: Release-v*
 
           # API key to authenticate with NuGet server
-          NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+          NUGET_KEY: ${{secrets.NUGET_KEY}}
 
           # NuGet server uri hosting the packages, defaults to https://api.nuget.org
           NUGET_SOURCE: https://api.nuget.org
