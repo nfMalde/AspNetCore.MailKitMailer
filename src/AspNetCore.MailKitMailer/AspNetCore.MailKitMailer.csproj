@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/nfMalde/AspNetCore.MailKitMailer</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/nfMalde/AspNetCore.MailKitMailer</PackageProjectUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
+    <PackageReleaseNotes>Initial Release for .NET CORE 3.1+</PackageReleaseNotes>
+    <Description>An slim and simple client to handle HTML Mails in .net core 3.1+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.</Description>
+    <Copyright>2021 Malte Peters</Copyright>
+	<PackageReadmeFile>README.MD</PackageReadmeFile>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+	<None Include="..\..\nugetdocs\README.MD" Pack="true" PackagePath="\" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.39" />
+    <PackageReference Include="MailKit" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.20" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.22" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.22" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.22" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+</Project>

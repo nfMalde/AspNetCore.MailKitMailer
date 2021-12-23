@@ -1,0 +1,31 @@
+﻿@model SingleValueModel
+@{
+}
+
+<p>
+    This is a test mail for Single Value Parameter usage:
+    <ul>
+        <li class="to">
+            <ul>
+                <li>To.Email=<span class="to_email">@Model.Data.To?.Email</span></li>
+                <li>To.Name=<span class="to_name">@Model.Data.To?.Name</span></li>
+            </ul>
+        </li>
+
+        <li class="cc">
+            <ul>
+                <li>Cc.Email=<span class="cc_email">@Model.Data.Cc?.Email</span></li>
+                <li>Cc.Name=<span class="cc_name">@Model.Data.Cc?.Name</span></li>
+            </ul>
+        </li>
+        
+         <li class="bcc">
+             <ul>
+                 <li>Bcc.Email=<span class="bcc_email">@Model.Data.Bcc?.Email</span></li>
+                 <li>Bcc.Name=<span class="bcc_name">@Model.Data.Bcc?.Name</span></li>
+             </ul>
+         </li>
+    </ul>
+
+</p>
+ 

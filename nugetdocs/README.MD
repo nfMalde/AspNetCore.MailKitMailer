@@ -1,6 +1,7 @@
 [![Nuget](https://img.shields.io/nuget/v/AspNetCore.MailKitMailer?style=flat-square)](https://www.nuget.org/packages/AspNetCore.MailKitMailer/) 
  [![Downloads](https://img.shields.io/nuget/dt/AspNetCore.MailKitMailer?style=flat-square)](https://www.nuget.org/packages/AspNetCore.MailKitMailer/)
- [![Paypal Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
+ [![Paypal Donate](https://img.shields.io/badge/DONATE%E2%99%A5-PAYPAL-blue?style=flat-square&logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
+ [![Github](https://img.shields.io/badge/nfMalde-AspNetCore.MailKitMailer-lightgrey?style=flat-square&logo=github)](https://github.com/nfMalde/AspNetCore.MailKitMailer)
 
 # AspNetCore.MailKitMailer (by Malte)
 This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET Core 3.1+
@@ -290,8 +291,8 @@ If you got any Ideas to improve my projects feel free to send an pull request.
 
 If you like my work and want to support me (or want to buy me a coffee/beer) paypal donation are more than appreciated.
 
- [![Paypal Donate](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
 
+ [![Paypal Donate](https://img.shields.io/badge/DONATE%E2%99%A5-PAYPAL-blue?style=for-the-badge&logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
 
 ## Changelog
 
