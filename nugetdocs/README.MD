@@ -2,7 +2,7 @@
  [![Downloads](https://img.shields.io/nuget/dt/AspNetCore.MailKitMailer?style=flat-square)](https://www.nuget.org/packages/AspNetCore.MailKitMailer/)
  [![Paypal Donate](https://img.shields.io/badge/DONATE%E2%99%A5-PAYPAL-blue?style=flat-square&logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
  [![Github](https://img.shields.io/badge/nfMalde-AspNetCore.MailKitMailer-lightgrey?style=flat-square&logo=github)](https://github.com/nfMalde/AspNetCore.MailKitMailer)
-
+[![.NET](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/build-master.yml/badge.svg?branch=main)](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/build-master.yml)
 # AspNetCore.MailKitMailer (by Malte)
 This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET Core 3.1+
 
