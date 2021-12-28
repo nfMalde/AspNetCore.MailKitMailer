@@ -6,11 +6,11 @@
 This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET Core 3.1+
 
 # Third Party Dependencies
-[MailKit](https://github.com/jstedfast/MailKit)
-[Json.NET](https://www.newtonsoft.com/json)
-[XUnit](https://xunit.net/)
-[Nunit](https://docs.nunit.org/index.html)
-
+* [MailKit](https://github.com/jstedfast/MailKit)
+* [Json.NET](https://www.newtonsoft.com/json)
+* [XUnit](https://xunit.net/)
+* [Nunit](https://docs.nunit.org/index.html)
+* [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/)
 ## Install
 Using the nuget package manager:
 ```
@@ -298,7 +298,7 @@ See  https://github.com/nfMalde/AspNetCore.MailKitMailer/blob/main/src/AspNetCor
 
 
 #### Examples 
-There is an fully working example .net core project located at https://github.com/nfMalde/AspNetCore.MailKitMailer/examples/MailKitMailerExample.
+There is an fully working example .net core project located at https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/main/examples/MailKitMailerExample.
 Feel free to download it and play arround.
 Also this project got a few integration tests where you can see all different type of usages.
  
