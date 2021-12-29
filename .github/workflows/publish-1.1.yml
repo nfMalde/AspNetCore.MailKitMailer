@@ -1,30 +1,149 @@
 name: Release 1.1.x
-
 on:
   push:
-    branches: [ release-1.1.x ]
-  pull_request:
-    branches: [ release-1.1.x ]
+    branches: [ release-1.1.x ]   
 
 jobs:
-  build:
-
+  test:
     runs-on: windows-latest
-
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET 5
-      uses: actions/setup-dotnet@v1
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup .net 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: "Build and Test"
+        run: |
+          dotnet build
+          dotnet test
+
+  prepublish:
+    needs: test
+    runs-on: windows-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+    - name: Checkout Sources
+      uses: actions/checkout@v2
       with:
-        dotnet-version: 5.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Version
-      uses: paulhatch/semantic-version@v4.0.2
-      id: pkg-v
+        fetch-depth: 0
+    - name: Generate Version Number
+      shell: pwsh
+      id: v
+      run: | 
+        # Check if we are on a version branch or release branch (eg. 1.1.x or release-1.1.x)
+        $currentBranch = $Env:GITHUB_REF_NAME
+        $isReleaseBranch = ("$($currentBranch)").StartsWith("release-");
+        $parsedBranchName = $currentBranch;
+
+        if ($isReleaseBranch) {
+            Write-Host "We are on release branch. Versioning will be permanent"
+            $parsedBranchName = ("$($currentBranch)").Substring(("release-").Length)
+        }
+
+        if ($parsedBranchName.StartsWith('v')) {
+            $parsedBranchName = $parsedBranchName.Substring(1)
+        }
+
+        $isVersionBranch = $parsedBranchName -match "(\d+.\d+.x)"
+
+        if (!$isVersionBranch) {
+            Write-Host "Canceling. Not a version branch"
+            return 0
+        }
+
+        $versionParts = $parsedBranchName.Split('.')
+        $versionPrefix = "$($versionParts[0]).$($versionParts[1])" 
+        $startVersion = [version]::Parse("$($versionPrefix).0")
+        # Get Git Tags
+        $gitTags = @(git tag --list --sort=-version:refname "v$($versionPrefix).*")
+        $newVersion = [version]::Parse("$($startVersion.Major).$($startVersion.Minor).$($startVersion.Build)")
+        Write-Host "Tags: $($gitTags)"
+
+        if ($gitTags.Length -gt 0) {
+          if ($gitTags[0][0] -eq "v") {
+              $latest =  ("$($gitTags[0])").Substring(1)
+
+              Write-Host "Latest  Tag is $($latest)"
+              $versionInfo = [Version]::Parse($latest)
+
+              if ($versionInfo) {
+                  Write-Host "Version Parsed: $($versionInfo.Major).$($versionInfo.Minor).$($versionInfo.Build)."
+                  $newVersion = [version]::Parse("$($versionInfo.Major).$($versionInfo.Minor).$($versionInfo.Build+1)")
+
+              }
+          }
+        }
+
+
+        Write-Host "New Version is $($newVersion.Major).$($newVersion.Minor).$($newVersion.Build)"
+
+        Write-Output "::set-output name=version::$($newVersion.Major).$($newVersion.Minor).$($newVersion.Build)"
     - name: Print Version
-      run: echo '${{ steps.do-stuff.outputs.version }}'
+      run: echo '${{ steps.v.outputs.version }}'
+  publish:
+    needs: prepublish
+    if: ${{ needs.prepublish.outputs.version && needs.prepublish.outputs.version != ''}}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Get Change Info
+        id: info
+        uses: mavrosxristoforos/get-xml-info@1.0
+        with:
+          xml-file: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
+          xpath: '//PackageReleaseNotes'
+
+      - name: Print Change Info
+        run: echo '${{ steps.info.outputs.info  }}'
+
+      - name: Create Release and Tag
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: v${{ needs.prepublish.outputs.version  }}
+          release_name: Release v${{ needs.prepublish.outputs.version  }}
+          body: '${{ steps.info.outputs.info  }}'
+          draft: false
+          prerelease: false
+      - name: Setup .net 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Create Package
+        run: |
+          dotnet build src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.prepublish.outputs.version }} -p:PackageVersion=${{ needs.prepublish.outputs.version }}
+          dotnet pack src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.prepublish.outputs.version }} -p:PackageVersion=${{ needs.prepublish.outputs.version }} --output nget_pkg
+      
+      - name: Upload Release Asset Pkg
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./nget_pkg/AspNetCore.MailKitMailer.${{ needs.prepublish.outputs.version }}.nupkg
+          asset_name: AspNetCore.MailKitMailer.${{ needs.prepublish.outputs.version }}.nupkg
+          asset_content_type: application/zip
+      - name: Upload Release Asset DLL
+        id: upload-release-asset2 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: src/AspNetCore.MailKitMailer/bin/Release/net5.0/AspNetCore.MailKitMailer.dll
+          asset_name: AspNetCore.MailKitMailer.dll
+          asset_content_type: application/octet-stream 
+      - name: Publish package to nuget
+        id: nugetpush
+        run: dotnet nuget push  "nget_pkg/AspNetCore.MailKitMailer.${{ needs.prepublish.outputs.version }}.nupkg" -k ${{secrets.NUGET_KEY}} -s https://api.nuget.org/v3/index.json  
