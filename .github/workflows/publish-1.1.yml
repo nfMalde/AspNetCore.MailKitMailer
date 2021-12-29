@@ -2,8 +2,6 @@ name: Release 1.1.x
 on:
   push:
     branches: [ release-1.1.x ]
-  pull_request:
-    branches: [ release-1.1.x ]
     
 
 jobs:
