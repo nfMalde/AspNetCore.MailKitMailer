@@ -21,6 +21,6 @@ jobs:
         run: | 
           $foo = "bar"
           
-          Write-Host "::set-output name=version::$($foo)"
+          echo "::set-output name=version::$($foo)"
       - name: Print Version
         run: echo '${{ steps.v.outputs.version }}'
