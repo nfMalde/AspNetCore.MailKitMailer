@@ -45,4 +45,27 @@ jobs:
 
           Write-Output "::set-output name=version::$($newVersion.Major).$($newVersion.Minor).$($newVersion.Build)"
       - name: Print Version
-        run: echo '${{ steps.v.outputs.version }}'
+        run: echo '${{ steps.v.outputs.version }}'      
+      - name: Get Change Info
+        id: info
+        uses: mavrosxristoforos/get-xml-info@1.0
+        with:
+          xml-file: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
+          xpath: '//PackageReleaseNotes'
+      - name: Print Change Info
+        run: echo '${{ steps.info.outputs.info  }}'
+      - name: Create Release and Tag
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: v${{ steps.v.outputs.version  }}
+          release_name: Release ${{ steps.v.outputs.version  }}
+          body: '${{ steps.info.outputs.info  }}'
+          draft: false
+          prerelease: false
+      - name: Setup .net 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
