@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://github.com/nfMalde/AspNetCore.MailKitMailer</PackageProjectUrl>
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
-    <PackageReleaseNotes>Updated Readme and example links</PackageReleaseNotes>
+    <PackageReleaseNotes>Created .net 5 compiled version using updated dependencies.</PackageReleaseNotes>
     <Description>An slim and simple client to handle HTML Mails in .net core 3.1+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.</Description>
     <Copyright>2021 Malte Peters</Copyright>
 	<PackageReadmeFile>README.MD</PackageReadmeFile>
