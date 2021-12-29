@@ -132,7 +132,7 @@ jobs:
           asset_name: AspNetCore.MailKitMailer.${{ needs.prepublish.outputs.version }}.nupkg
           asset_content_type: application/zip
       - name: Upload Release Asset DLL
-        id: upload-release-asset 
+        id: upload-release-asset2 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
