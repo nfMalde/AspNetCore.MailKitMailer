@@ -20,7 +20,7 @@ jobs:
         id: v
         run: | 
           # Check if we are on a version branch or release branch (eg. 1.1.x or release-1.1.x)
-          $currentBranch = "${{GITHUB_REF}}"
+          $currentBranch = "${GITHUB_HEAD_REF}"
           echo $currentBranch
           return 0
           $isReleaseBranch = ("$($currentBranch)").StartsWith("release-");
