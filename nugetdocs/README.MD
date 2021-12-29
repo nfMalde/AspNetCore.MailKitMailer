@@ -311,8 +311,14 @@ If you like my work and want to support me (or want to buy me a coffee/beer) pay
 
  [![Paypal Donate](https://img.shields.io/badge/DONATE%E2%99%A5-PAYPAL-blue?style=for-the-badge&logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
 
+
 ## Changelog
 
 Version | Changes 
 ------------ | ------------
+1.1.1 | Updated Changed Log for 1.1.x
+1.1.0 | Initial .NET 5 Release
+1.0.2 | Updated Examples
+1.0.1 | Updated Docs
 1.0.0 | Initial Release
+
