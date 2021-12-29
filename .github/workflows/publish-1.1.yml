@@ -18,21 +18,16 @@ jobs:
         run: | 
           # Check if we are on a version branch or release branch (eg. 1.1.x or release-1.1.x)
           $currentBranch = $Env:GITHUB_REF_NAME
-          echo $currentBranch
-          return 0
           $isReleaseBranch = ("$($currentBranch)").StartsWith("release-");
-
           $parsedBranchName = $currentBranch;
 
           if ($isReleaseBranch) {
               Write-Host "We are on release branch. Versioning will be permanent"
               $parsedBranchName = ("$($currentBranch)").Substring(("release-").Length)
-
           }
 
           if ($parsedBranchName.StartsWith('v')) {
               $parsedBranchName = $parsedBranchName.Substring(1)
-
           }
 
           $isVersionBranch = $parsedBranchName -match "(\d+.\d+.x)"
