@@ -7,6 +7,21 @@ on:
     branches: [ release-1.1.x ]
 
 jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+      - name: Setup .net 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --no-restore
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
   publish:
     runs-on: windows-latest
     steps:
@@ -33,9 +48,7 @@ jobs:
           # If this is set to true, *every* commit will be treated as a new version.
           bump_each_commit: true
       - name: Print Version
-        run: echo '${{ steps.v.outputs.version }}' 
-      - name: Print Version Tag
-        run: echo '${{ steps.v.outputs.version_tag  }}'
+        run: echo '${{ steps.v.outputs.version }}'
       - name: Get Change Info
         id: info
         uses: mavrosxristoforos/get-xml-info@1.0
@@ -50,8 +63,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ steps.v.outputs.version_tag  }}
-          release_name: Release${{ steps.v.outputs.version_tag  }}
+          tag_name: v${{ steps.v.outputs.version  }}
+          release_name: Release ${{ steps.v.outputs.version  }}
           body: '${{ steps.info.outputs.info  }}'
           draft: false
           prerelease: false
+      - name: Setup .net 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
