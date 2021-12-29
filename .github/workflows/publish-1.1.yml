@@ -7,23 +7,8 @@ on:
     branches: [ release-1.1.x ]
 
 jobs:
-  build:
-    runs-on: windows-latest
-    steps:
-      - name: Checkout Sources
-        uses: actions/checkout@v2
-      - name: Setup .net 5
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.0.x
-      - name: Restore dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --no-restore
-      - name: Test
-        run: dotnet test --no-build --verbosity normal
+  
   publish:
-    needs: build
     runs-on: windows-latest
     steps:
       - name: Checkout Sources
@@ -42,7 +27,7 @@ jobs:
           # Same as above except indicating a minor change, supports regular expressions wrapped with '/'
           minor_pattern: "(MINOR)"
           # A string to determine the format of the version output
-          format: "1.1.${increment}"
+          format: "1.1.${patch}"
           # Indicate whether short tags like 'v1' should be supported. If false only full
           # tags like 'v1.0.0' will be recognized.
           short_tags: true
@@ -50,26 +35,3 @@ jobs:
           bump_each_commit: true
       - name: Print Version
         run: echo '${{ steps.v.outputs.version }}'
-      - name: Get Change Info
-        id: info
-        uses: mavrosxristoforos/get-xml-info@1.0
-        with:
-          xml-file: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
-          xpath: '//PackageReleaseNotes'
-      - name: Print Change Info
-        run: echo '${{ steps.info.outputs.info  }}'
-      - name: Create Release and Tag
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: v${{ steps.v.outputs.version  }}
-          release_name: Release ${{ steps.v.outputs.version  }}
-          body: '${{ steps.info.outputs.info  }}'
-          draft: false
-          prerelease: false
-      - name: Setup .net 5
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.0.x
