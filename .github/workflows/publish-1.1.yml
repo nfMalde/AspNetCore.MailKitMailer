@@ -5,7 +5,8 @@ on:
 
 jobs:
   test:
-   steps:
+    runs-on: windows-latest
+    steps:
       - name: Checkout Sources
         uses: actions/checkout@v2
         with:
