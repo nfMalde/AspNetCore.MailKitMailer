@@ -44,3 +44,14 @@ jobs:
           xpath: '//PackageReleaseNotes'
       - name: Print Change Info
         run: echo '${{ steps.info.outputs.info  }}'
+      - name: Create Release and Tag
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ steps.v.outputs.version_tag  }}
+          release_name: Release${{ steps.v.outputs.version_tag  }}
+          body: '${{ steps.info.outputs.info  }}'
+          draft: false
+          prerelease: false
