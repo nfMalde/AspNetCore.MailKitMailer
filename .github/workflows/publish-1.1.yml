@@ -60,7 +60,7 @@ jobs:
         $startVersion = [version]::Parse("$($versionPrefix).0")
         # Get Git Tags
         $gitTags = git tag --list --sort=-version:refname "v$($versionPrefix).*"
-        $newVersion = [version]::Parse("$($startVersion.Major).$($startVersion.Minor).$($startVersion.Build+1)")
+        $newVersion = [version]::Parse("$($startVersion.Major).$($startVersion.Minor).$($startVersion.Build)")
         Write-Host "Tags: $($gitTags)"
 
         if ($gitTags.Length -gt 0) {
