@@ -36,3 +36,11 @@ jobs:
         run: echo '${{ steps.v.outputs.version }}' 
       - name: Print Version Tag
         run: echo '${{ steps.v.outputs.version_tag  }}'
+      - name: Get Change Info
+        id: info
+        uses: mavrosxristoforos/get-xml-info@1.0
+        with:
+          xml-file: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
+          xpath: '//PackageReleaseNotes'
+      - name: Print Change Info
+        run: echo '${{ steps.info.outputs.info  }}'
