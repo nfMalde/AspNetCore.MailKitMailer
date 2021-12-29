@@ -20,8 +20,29 @@ jobs:
         shell: pwsh
         id: v
         run: | 
-          $foo = "bar"
-          
-          echo "::set-output name=version::$($foo)"
+          $startVersion = [version]::Parse("1.1.0")
+          # Get Git Tags
+          $gitTags = git tag --list --sort=-version:refname "v1.1.*"
+          $newVersion = [version]::Parse("$($startVersion.Major).$($startVersion.Minor).$($startVersion.Build+1)")
+          Write-Host "Tags: $($gitTags)"
+          if ($gitTags.Length -gt 0) {
+            if ($gitTags[0][0] -eq "v") {
+                $latest =  ("$($gitTags[0])").Substring(1)
+
+                Write-Host "Latest  Tag is $($latest)"
+                $versionInfo = [Version]::Parse($latest)
+
+                if ($versionInfo) {
+                    Write-Host "Version Parsed: $($versionInfo.Major).$($versionInfo.Minor).$($versionInfo.Build)."
+                    $newVersion = [version]::Parse("$($versionInfo.Major).$($versionInfo.Minor).$($versionInfo.Build+1)")
+
+                }
+            }
+          }
+
+
+          Write-Host "New Version is $($newVersion.Major).$($newVersion.Minor).$($newVersion.Build)"
+
+          Write-Output "::set-output name=version::$($newVersion.Major).$($newVersion.Minor).$($newVersion.Build)"
       - name: Print Version
         run: echo '${{ steps.v.outputs.version }}'
