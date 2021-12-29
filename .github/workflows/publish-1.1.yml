@@ -10,6 +10,10 @@ jobs:
   publish:
     runs-on: windows-latest
     steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Generate Version Number
         uses: paulhatch/semantic-version@v4.0.2
         id: v
