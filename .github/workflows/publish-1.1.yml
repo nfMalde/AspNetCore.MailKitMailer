@@ -101,6 +101,6 @@ jobs:
           dotnet-version: 5.0.x
       - name: Create Package
         run: |
-          dotnet build src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release
+          dotnet build src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.prepublish.outputs.version }} -p:PackageVersion=${{ needs.prepublish.outputs.version }}
           dotnet pack src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.prepublish.outputs.version }} -p:PackageVersion=${{ needs.prepublish.outputs.version }} --output nget_pkg
           
