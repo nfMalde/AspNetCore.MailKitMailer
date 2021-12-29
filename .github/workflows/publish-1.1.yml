@@ -33,6 +33,6 @@ jobs:
           # If this is set to true, *every* commit will be treated as a new version.
           bump_each_commit: true
       - name: Print Version
-        run: 'echo "${{ steps.v.outputs.version }}"' 
+        run: echo '${{ steps.v.outputs.version }}' 
       - name: Print Version Tag
-        run : 'echo "${{ steps.v.outputs.tag }}"
+        run: echo '${{ steps.v.outputs.version_tag  }}
