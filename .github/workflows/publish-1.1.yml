@@ -13,18 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET 5
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
     - name: Version
       uses: paulhatch/semantic-version@v4.0.2
       id: pkg-v
     - name: Print Version
-      run: echo '${{ steps.do-stuff.outputs.version }}'
+      run: echo '${{ steps.pkg-v.outputs.version }}'
