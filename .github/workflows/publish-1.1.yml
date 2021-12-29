@@ -72,6 +72,10 @@ jobs:
     if: ${{ needs.prepublish.outputs.version && needs.prepublish.outputs.version != ''}}
     runs-on: windows-latest
     steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Get Change Info
         id: info
         uses: mavrosxristoforos/get-xml-info@1.0
