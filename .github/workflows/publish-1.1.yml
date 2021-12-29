@@ -35,4 +35,4 @@ jobs:
       - name: Print Version
         run: echo '${{ steps.v.outputs.version }}' 
       - name: Print Version Tag
-        run: echo '${{ steps.v.outputs.version_tag  }}
+        run: echo '${{ steps.v.outputs.version_tag  }}'
