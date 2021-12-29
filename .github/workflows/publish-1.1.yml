@@ -1,9 +1,6 @@
 name: Release 1.1.x
-
 on:
   push:
-    branches: [ release-1.1.x ]
-  pull_request:
     branches: [ release-1.1.x ]
     
 
@@ -17,45 +14,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Generate Version Number
-        uses: paulhatch/semantic-version@v4.0.2
+        shell: pwsh
         id: v
-        with:
-          # The prefix to use to identify tags
-          tag_prefix: "v"
-          # A string which, if present in a git commit, indicates that a change represents a
-          # major (breaking) change, supports regular expressions wrapped with '/'
-          major_pattern: "(MAJOR)"
-          # Same as above except indicating a minor change, supports regular expressions wrapped with '/'
-          minor_pattern: "(MINOR)"
-          # A string to determine the format of the version output
-          format: "1.1.${patch}"
-          # Indicate whether short tags like 'v1' should be supported. If false only full
-          # tags like 'v1.0.0' will be recognized.
-          short_tags: true
-          # If this is set to true, *every* commit will be treated as a new version.
-          bump_each_commit: false
-      - name: Print Version
-        run: echo '${{ steps.v.outputs.version }}'
-      - name: Get Change Info
-        id: info
-        uses: mavrosxristoforos/get-xml-info@1.0
-        with:
-          xml-file: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
-          xpath: '//PackageReleaseNotes'
-      - name: Print Change Info
-        run: echo '${{ steps.info.outputs.info  }}'
-      - name: Create Release and Tag
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag_name: v${{ steps.v.outputs.version  }}
-          release_name: Release ${{ steps.v.outputs.version  }}
-          body: '${{ steps.info.outputs.info  }}'
-          draft: false
-          prerelease: false
-      - name: Setup .net 5
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.0.x
+        run: | 
+          # Check if we are on a version branch or release branch (eg. 1.1.x or release-1.1.x)
+          $branch = $Env:GITHUB_REF_NAME
+          echo $branch
