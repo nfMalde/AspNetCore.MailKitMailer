@@ -19,7 +19,8 @@ jobs:
       - name: Generate Version Number
         shell: pwsh
         run: | 
-          $foo = "bar" |
+          $foo = "bar"
+          
           Write-Host "::set-output name=version::$($foo)"
       - name: Print Version
         run: echo '${{ steps.v.outputs.version }}'
