@@ -69,7 +69,7 @@ jobs:
       run: echo '${{ steps.v.outputs.version }}'
   publish:
     needs: prepublish
-    if: ${{ jobs.prepublish.outputs.version && jobs.prepublish.outputs.version != ''}}
+    if: ${{ needs.prepublish.outputs.version && needs.prepublish.outputs.version != ''}}
     runs-on: windows-latest
     steps:
       - name: Get Change Info
@@ -86,8 +86,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: v${{ jobs.prepublish.outputs.version  }}
-          release_name: Release ${{ jobs.prepublish.outputs.version  }}
+          tag_name: v${{ needs.prepublish.outputs.version  }}
+          release_name: Release ${{ needs.prepublish.outputs.version  }}
           body: '${{ steps.info.outputs.info  }}'
           draft: false
           prerelease: false
