@@ -4,7 +4,23 @@ on:
     branches: [ release-1.1.x ]   
 
 jobs:
+  test:
+   steps:
+      - name: Checkout Sources
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup .net 5
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+      - name: "Build and Test"
+        run: |
+          dotnet build
+          dotnet test
+
   prepublish:
+    needs: test
     runs-on: windows-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
