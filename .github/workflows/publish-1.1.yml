@@ -22,7 +22,7 @@ jobs:
           # Check if we are on a version branch or release branch (eg. 1.1.x or release-1.1.x)
           $currentBranch = "${{GITHUB_REF#refs/heads/}}"
           echo $currentBranch
-          return 0;
+          return 0
           $isReleaseBranch = ("$($currentBranch)").StartsWith("release-");
 
           $parsedBranchName = $currentBranch;
@@ -42,6 +42,7 @@ jobs:
 
           if (!$isVersionBranch) {
               Write-Host "Canceling. Not a version branch"
+              return 0
           }
           $versionParts = $parsedBranchName.Split('.')
           $versionPrefix = "$($versionParts[0]).$($versionParts[1])" 
