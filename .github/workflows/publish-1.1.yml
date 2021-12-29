@@ -18,6 +18,7 @@ jobs:
           fetch-depth: 0
       - name: Generate Version Number
         shell: pwsh
+        id: v
         run: | 
           $foo = "bar"
           
