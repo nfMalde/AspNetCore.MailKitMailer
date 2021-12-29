@@ -4,7 +4,19 @@
  [![Github](https://img.shields.io/badge/nfMalde-AspNetCore.MailKitMailer-lightgrey?style=flat-square&logo=github)](https://github.com/nfMalde/AspNetCore.MailKitMailer)
 [![.NET](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/build-master.yml/badge.svg?branch=main)](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/build-master.yml)
 # AspNetCore.MailKitMailer (by Malte)
-This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET Core 3.1+
+This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 5.x
+
+## Older Versions
+For best support look at the table below please:
+
+Each minor version has its own support for each .net version.
+Future major releases are only released for the next, current and lts support versions.
+
+.NET Version | Package Version | Branch 
+------------ | ------------ | ------------
+.NET Core 3.1 | 1.0.x | [1.0.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.0.x)
+.NET 5 | 1.1.x | [1.1.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.1.x)
+
  
 # Third Party Dependencies
 * [MailKit](https://github.com/jstedfast/MailKit)
@@ -311,8 +323,14 @@ If you like my work and want to support me (or want to buy me a coffee/beer) pay
 
  [![Paypal Donate](https://img.shields.io/badge/DONATE%E2%99%A5-PAYPAL-blue?style=for-the-badge&logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
 
+
 ## Changelog
 
 Version | Changes 
 ------------ | ------------
+1.1.1 | Updated Changed Log for 1.1.x
+1.1.0 | Initial .NET 5 Release
+1.0.2 | Updated Examples
+1.0.1 | Updated Docs
 1.0.0 | Initial Release
+
