@@ -40,8 +40,8 @@ jobs:
         [xml]$xml = get-content "src\AspNetCore.MailKitMailer\AspNetCore.MailKitMailer.csproj"    
         $description = $xml.SelectSingleNode("//Description").InnerText;
         $changes = $xml.SelectSingleNode("//PackageReleaseNotes").InnerText;
-        Write-Output "::set-output name=description::$($description.Trim())"
-        Write-Output "::set-output name=changeinfo::$($changes.Trim())"
+        Write-Output "::set-output name=description::$($description.Trim() | ConvertTo-Json)"
+        Write-Output "::set-output name=changeinfo::$($changes.Trim() | ConvertTo-Json)"
     - name: Generate Version Number
       shell: pwsh
       id: v
@@ -108,9 +108,9 @@ jobs:
     
       - name: Print Description
         id: printdescription
-        run: echo '${{needs.prepublish.outputs.description}}'
+        run: echo '${{fromJSON(needs.prepublish.outputs.description)}}'
       - name: Print Change Info
-        run: echo '${{ needs.prepublish.outputs.changeinfo }}'
+        run: echo '${{fromJSON(needs.prepublish.outputs.changeinfo) }}'
       - name: Create Release and Tag
         id: create_release
         uses: actions/create-release@latest
@@ -121,10 +121,10 @@ jobs:
           release_name: Release v${{ needs.prepublish.outputs.version  }}
           body: |
            # About
-           ${{needs.prepublish.outputs.description}}
+           ${{fromJSON(needs.prepublish.outputs.description)}}
 
            # Changes in v${{ needs.prepublish.outputs.version  }}
-           ${{needs.prepublish.outputs.changeinfo}}
+           ${{fromJSON(needs.prepublish.outputs.changeinfo)}}
           draft: false
           prerelease: false
       - name: Setup .net core 3.1
