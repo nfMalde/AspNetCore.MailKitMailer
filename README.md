@@ -3,7 +3,8 @@
  [![Paypal Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
 [![.NET](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/build-master.yml/badge.svg?branch=main)](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/build-master.yml)
 # AspNetCore.MailKitMailer (by Malte)
-This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 5.x
+This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 6.x
+
 
 ## Older Versions
 For best support look at the table below please:
@@ -15,6 +16,7 @@ Future major releases are only released for the next, current and lts support ve
 ------------ | ------------ | ------------
 .NET Core 3.1 | 1.0.x | [1.0.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.0.x)
 .NET 5 | 1.1.x | [1.1.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.1.x)
+.NET 6 | 1.2.x | [1.2.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.2.x)
 
 
 
@@ -26,6 +28,7 @@ Future major releases are only released for the next, current and lts support ve
 * [Html Agility Pack (HAP)](https://github.com/zzzprojects/html-agility-pack/)
 ## Install
 Using the nuget package manager:
+
 ```
 Install-Package AspNetCore.MailKitMailer
 ```
