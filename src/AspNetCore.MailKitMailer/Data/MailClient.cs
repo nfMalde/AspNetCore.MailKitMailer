@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net.Http;
 using System.Security.Authentication;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,6 +58,8 @@ namespace AspNetCore.MailKitMailer.Data
         /// </summary>
         private readonly IHttpContextAccessor httpContextAccessor;
 
+        private readonly HttpClient httpClient;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MailClient" /> class.
         /// </summary>
@@ -72,7 +75,8 @@ namespace AspNetCore.MailKitMailer.Data
             IServiceProvider serviceProvider,
             IMailerViewEngine razorViewEngine,
             ITempDataProvider tempDataProvider,
-            IEnumerable<IHttpContextAccessor> httpContextAccessor)
+            IEnumerable<IHttpContextAccessor> httpContextAccessor,
+            IHttpClientFactory httpClientFactory)
         {
             this.smtpConfig = smtpConfig;
             this.client = client;
@@ -80,6 +84,7 @@ namespace AspNetCore.MailKitMailer.Data
             this.razorViewEngine = razorViewEngine;
             this.tempDataProvider = tempDataProvider;
             this.httpContextAccessor = httpContextAccessor?.Count() > 0 ? httpContextAccessor.FirstOrDefault() : null;
+            this.httpClient = httpClientFactory.CreateClient("attachmentDownloader");
         }
 
 
@@ -238,16 +243,38 @@ namespace AspNetCore.MailKitMailer.Data
                     }
                     else if (attachment.FileUrl != null)
                     {
-                        var net = new System.Net.WebClient();
-                        var data = net.DownloadData(attachment.FileUrl);
+                        
+                        var data = await this.httpClient.GetByteArrayAsync(attachment.FileUrl);
                         var content = new System.IO.MemoryStream(data);
                         string fname = Path.GetFileName(attachment.FileUrl.ToString());
+
+                        if (!Path.HasExtension(fname))
+                        {
+                            // We got no valid file name. Lets see if we find an content disposition.
+                            var rr = await this.httpClient.GetAsync(attachment.FileUrl);
+                            var headers = rr.Content.Headers;
+
+                            if (headers != null && headers.ContentDisposition != null)
+                            {
+                                string cdname = headers.ContentDisposition.FileName;
+
+                                if (!string.IsNullOrEmpty(cdname))
+                                {
+                                    fname = cdname;
+                                }
+                            }
+
+                        }
 
                         MimePart att = null;
 
                         if (attachment.ContenType != null)
                         {
                             att = new MimePart(attachment.ContenType);
+                        }
+                        else
+                        {
+                            att = new MimePart(MimeKit.MimeTypes.GetMimeType(fname));
                         }
 
                         att.Content = new MimeContent(content, ContentEncoding.Default);

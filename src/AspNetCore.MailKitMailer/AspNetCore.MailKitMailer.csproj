@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -9,9 +9,25 @@
     <PackageProjectUrl>https://github.com/nfMalde/AspNetCore.MailKitMailer</PackageProjectUrl>
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
-    <PackageReleaseNotes>Created .net 5 compiled version using updated dependencies.</PackageReleaseNotes>
-    <Description>An slim and simple client to handle HTML Mails in .net core 3.1+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.</Description>
-    <Copyright>2021 Malte Peters</Copyright>
+    <PackageReleaseNotes>
+<![CDATA[
+* Removed obsolete WebClient and added http client instead.
+* Fixed Attachment Builder for filedownload when no content type is set
+* Attachment Builder now respects the Content-Disposition  Header if no filename in url is found
+]]>
+	</PackageReleaseNotes>
+    <Description>
+<![CDATA[
+## Important
+This is a .NET 5 compiled version.
+Users who use .net 6 please install the `1.2.x` package versions.
+Users who use .net core 3.1 please install the `1.0.x` versions
+		
+## What is this?
+An slim and simple client to handle HTML Mails in .NET 5.x for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.
+]]>
+	</Description>
+	<Copyright>2021 Malte Peters</Copyright>
 	<PackageReadmeFile>README.MD</PackageReadmeFile>
 	<Version>1.0.2</Version>
 

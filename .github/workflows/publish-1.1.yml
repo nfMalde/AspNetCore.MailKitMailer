@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Setup .net 5
+      - name: Setup .NET 5
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 5.0.x
@@ -24,12 +24,24 @@ jobs:
     needs: test
     runs-on: windows-latest
     outputs:
+      description: ${{ steps.meta.outputs.description }}
+      changeinfo: ${{ steps.meta.outputs.changeinfo }}
       version: ${{ steps.v.outputs.version }}
     steps:
+    
     - name: Checkout Sources
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
+    - name : Get Meta Data
+      shell: pwsh
+      id: meta
+      run: |
+        [xml]$xml = get-content "src\AspNetCore.MailKitMailer\AspNetCore.MailKitMailer.csproj"    
+        $description = $xml.SelectSingleNode("//Description").InnerText;
+        $changes = $xml.SelectSingleNode("//PackageReleaseNotes").InnerText;
+        Write-Output "::set-output name=description::$($description.Trim().Replace("`t", '') | ConvertTo-Json)"
+        Write-Output "::set-output name=changeinfo::$($changes.Trim().Replace("`t", '') | ConvertTo-Json)"
     - name: Generate Version Number
       shell: pwsh
       id: v
@@ -93,17 +105,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
-      - name: Get Change Info
-        id: info
-        uses: mavrosxristoforos/get-xml-info@1.0
-        with:
-          xml-file: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
-          xpath: '//PackageReleaseNotes'
-
+    
+      - name: Print Description
+        id: printdescription
+        run: echo '${{fromJSON(needs.prepublish.outputs.description)}}'
       - name: Print Change Info
-        run: echo '${{ steps.info.outputs.info  }}'
-
+        run: echo '${{fromJSON(needs.prepublish.outputs.changeinfo) }}'
       - name: Create Release and Tag
         id: create_release
         uses: actions/create-release@latest
@@ -112,10 +119,15 @@ jobs:
         with:
           tag_name: v${{ needs.prepublish.outputs.version  }}
           release_name: Release v${{ needs.prepublish.outputs.version  }}
-          body: '${{ steps.info.outputs.info  }}'
+          body: |
+           # Info
+           ${{fromJSON(needs.prepublish.outputs.description)}}
+
+           # Changes in v${{ needs.prepublish.outputs.version  }}
+           ${{fromJSON(needs.prepublish.outputs.changeinfo)}}
           draft: false
           prerelease: false
-      - name: Setup .net 5
+      - name: Setup .NET 5
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 5.0.x
@@ -143,7 +155,7 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: src/AspNetCore.MailKitMailer/bin/Release/net5.0/AspNetCore.MailKitMailer.dll
           asset_name: AspNetCore.MailKitMailer.dll
-          asset_content_type: application/octet-stream 
+          asset_content_type: application/octet-stream
       - name: Publish package to nuget
         id: nugetpush
         run: dotnet nuget push  "nget_pkg/AspNetCore.MailKitMailer.${{ needs.prepublish.outputs.version }}.nupkg" -k ${{secrets.NUGET_KEY}} -s https://api.nuget.org/v3/index.json  
