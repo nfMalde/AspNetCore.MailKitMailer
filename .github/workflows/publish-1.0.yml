@@ -5,6 +5,7 @@ on:
 
 jobs:
   test:
+    if: ${{ 1 == 0 }}
     runs-on: windows-latest
     steps:
       - name: Checkout Sources
