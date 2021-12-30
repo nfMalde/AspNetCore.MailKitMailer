@@ -1,15 +1,15 @@
-name: .NET
+name: Build 1.2.x
 
 on:
   push:
-    branches: [ main ]
+    branches: [ 1.2.x ]
   pull_request:
-    branches: [ main ]
+    branches: [ 1.2.x ]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2

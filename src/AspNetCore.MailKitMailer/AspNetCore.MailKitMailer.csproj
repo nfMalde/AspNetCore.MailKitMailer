@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -9,8 +9,25 @@
     <PackageProjectUrl>https://github.com/nfMalde/AspNetCore.MailKitMailer</PackageProjectUrl>
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
-    <PackageReleaseNotes>Created .net 5 compiled version using updated dependencies.</PackageReleaseNotes>
-    <Description>An slim and simple client to handle HTML Mails in .net core 3.1+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.</Description>
+    <PackageReleaseNotes>
+<![CDATA[
+* Removed obsolete WebClient and added http client instead
+* Fixed Attachment Builder for filedownload when no content type is set
+* Attachment Builder now respects the Content-Disposition  Header if no filename in url is found
+* Created .NET 6 compiled version using updated dependencies
+]]>
+	</PackageReleaseNotes>
+    <Description>
+<![CDATA[
+## Important
+This is a .NET 6 compiled version.
+Users who use .net 5 please install the `1.1.x` package versions.
+Users who use .net core 3.1 please install the `1.0.x` versions
+		
+## What is this?
+An slim and simple client to handle HTML Mails in .net core 6+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.
+]]>
+	</Description>
     <Copyright>2021 Malte Peters</Copyright>
 	<PackageReadmeFile>README.MD</PackageReadmeFile>
 	<Version>1.0.2</Version>
@@ -21,10 +38,10 @@
 	<None Include="..\..\nugetdocs\README.MD" Pack="true" PackagePath="\" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.39" />
     <PackageReference Include="MailKit" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.13" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

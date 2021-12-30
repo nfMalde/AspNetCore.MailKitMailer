@@ -1,7 +1,7 @@
-name: Release 1.1.x
+name: Release 1.2.x
 on:
   push:
-    branches: [ release-1.1.x ]   
+    branches: [ release-1.2.x ]   
 
 jobs:
   test:
@@ -11,10 +11,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Setup .NET 5
+      - name: Setup .NET 6
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
       - name: "Build and Test"
         run: |
           dotnet build
@@ -127,10 +127,10 @@ jobs:
            ${{fromJSON(needs.prepublish.outputs.changeinfo)}}
           draft: false
           prerelease: false
-      - name: Setup .NET 5
+      - name: Setup .NET 6
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
       - name: Create Package
         run: |
           dotnet build src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.prepublish.outputs.version }} -p:PackageVersion=${{ needs.prepublish.outputs.version }}
@@ -153,7 +153,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: src/AspNetCore.MailKitMailer/bin/Release/net5.0/AspNetCore.MailKitMailer.dll
+          asset_path: src/AspNetCore.MailKitMailer/bin/Release/net6.0/AspNetCore.MailKitMailer.dll
           asset_name: AspNetCore.MailKitMailer.dll
           asset_content_type: application/octet-stream
       - name: Publish package to nuget
