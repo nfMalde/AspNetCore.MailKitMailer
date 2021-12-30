@@ -124,7 +124,7 @@ jobs:
            ${{ steps.info.outputs.info  }}'
           draft: false
           prerelease: false
-      - name: Setup .net 5
+      - name: Setup .net core 3.1
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.1.x
