@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30114.105
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{88F1C151-05C7-40D3-9612-616CA403C086}"
 EndProject
@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test-apps", "test-apps", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTestsWebApp", "tests\Test-Apps\IntegrationTestsWebApp\IntegrationTestsWebApp.csproj", "{52E5B5CA-4061-40C0-B2DD-C5B56212B72B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MailKitMailerIntegrationTests", "tests\AspNetCore.MailKitMailerIntegrationTests\AspNetCore.MailKitMailerIntegrationTests.csproj", "{1BED8992-A364-41C4-8792-DF66A9D189EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore.MailKitMailerIntegrationTests", "tests\AspNetCore.MailKitMailerIntegrationTests\AspNetCore.MailKitMailerIntegrationTests.csproj", "{1BED8992-A364-41C4-8792-DF66A9D189EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

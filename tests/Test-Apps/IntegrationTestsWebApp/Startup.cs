@@ -19,6 +19,14 @@ namespace IntegrationTestsWebApp
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddHttpContextAccessor();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "Public",
+                      builder =>
+                      {
+                          builder.WithOrigins("*");
+                      });
+            });
              
         }
 
@@ -37,6 +45,8 @@ namespace IntegrationTestsWebApp
                 endpoints.MapControllers();
                 endpoints.MapRazorPages();
             });
+
+            app.UseCors("Public");
         }
     }
 }

@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using MailKit.Net.Smtp;
+using System.Net.Http;
 
 namespace AspNetCore.MailKitMailer
 {
@@ -32,6 +33,7 @@ namespace AspNetCore.MailKitMailer
         /// <returns></returns>
         public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, IConfiguration configuration, Action<SmtpClient> configureClient = null)
         {
+            services = CheckForHttpClient(services);
             services.Configure<Models.SMTPConfigModel>(x => configuration.GetSection("MailKitMailer").Bind(x));
             services.Configure<Models.MailerViewEngineOptions>(x => x = new Models.MailerViewEngineOptions());
             services.AddScoped<IMailerViewEngine, MailerViewEngine>();
@@ -58,6 +60,7 @@ namespace AspNetCore.MailKitMailer
         /// <returns></returns>
         public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, Models.SMTPConfigModel smtpconfig, Action<SmtpClient> configureClient = null)
         {
+            services = CheckForHttpClient(services);
             services.Configure<Models.SMTPConfigModel>(x => {
                 x.GetType().GetProperties()
                 .ToList().ForEach(p =>
@@ -100,6 +103,7 @@ namespace AspNetCore.MailKitMailer
         /// <returns></returns>
         public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, string fromAddress, string fromName, string host, string username, string password, int port, bool UseSSL, Action<SmtpClient> configureClient = null)
         {
+            services = CheckForHttpClient(services);
             services.Configure<Models.SMTPConfigModel>(x => x = new Models.SMTPConfigModel()
             {
                 FromAddress = new Models.EmailAddressModel()
@@ -188,6 +192,14 @@ namespace AspNetCore.MailKitMailer
             return services;
         }
 
+        private static IServiceCollection CheckForHttpClient(IServiceCollection services)
+        {
+            if (!services.Any(x => x.ServiceType == typeof(IHttpClientFactory)))
+            {
+                services.AddHttpClient();
+            }
 
+            return services;
+        }
     }
 }

@@ -13,6 +13,7 @@ using AspNetCore.MailKitMailerTests.TestClients;
 using System.Linq.Expressions;
 using AspNetCore.MailKitMailerTests.TestData;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using System.Net.Http;
 
 namespace AspNetCore.MailKitMailerTests
 {
@@ -32,6 +33,19 @@ namespace AspNetCore.MailKitMailerTests
             services.AddScoped<IMailkitSMTPClient>(x => Mock.Of<IMailkitSMTPClient>(MockBehavior.Loose));
             services.RegisterAllMailContexesOfCallingAssembly();
             services.AddScoped<ITempDataProvider>(x => Mock.Of<ITempDataProvider>(MockBehavior.Loose));
+
+            // Http client mock
+            Mock<TestClients.FakeHttpHandler> mockHandler =     new Mock<TestClients.FakeHttpHandler> {  CallBase = true};
+             mockHandler
+            .Setup(handler => handler.Send(It.IsAny<HttpRequestMessage>()))
+            .Returns(new HttpResponseMessage());
+
+            var mockHttpClient = new HttpClient(mockHandler.Object);
+            
+            Mock<IHttpClientFactory> mockFactory = new Mock<IHttpClientFactory>();
+            mockFactory.Setup(f => f.CreateClient(It.IsAny<string>())).Returns(mockHttpClient);
+
+            services.AddScoped<IHttpClientFactory>(x => mockFactory.Object);
         }
 
         [TestCaseSource(typeof(TestContexResultsData))]
