@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -11,22 +11,22 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
 
 	  <PackageReleaseNotes>
-		  <![CDATA[
-		* Removed obsolete WebClient and added http client instead.
-	    * Fixed Attachment Builder for filedownload when no content type is set
-		* Attachment Builder now respects the Content-Disposition  Header if no filename in url is found
-	]]>
+<![CDATA[
+* Removed obsolete WebClient and added http client instead.
+* Fixed Attachment Builder for filedownload when no content type is set
+* Attachment Builder now respects the Content-Disposition  Header if no filename in url is found
+]]>
 	  </PackageReleaseNotes>
 	  <Description>
-		  <![CDATA[
-	    ## Important
-		This is a .net core 3.1 compiled version.
-		Users who use .net 5 please install the `1.1.x` package versions.
-		Users who use .net 6 please install the `1.2.x` versions
+<![CDATA[
+## Important
+This is a .net core 3.1 compiled version.
+Users who use .net 5 please install the `1.1.x` package versions.
+Users who use .net 6 please install the `1.2.x` versions
 		
-		## About
-		An slim and simple client to handle HTML Mails in .net 3.1+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.
-	  ]]>
+## What is this?
+An slim and simple client to handle HTML Mails in .net 3.1+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.
+]]>
 	  </Description>
 
 	  <Copyright>2021 Malte Peters</Copyright>
