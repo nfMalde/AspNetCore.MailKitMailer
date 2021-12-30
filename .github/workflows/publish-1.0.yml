@@ -24,8 +24,19 @@ jobs:
   prepublish:
     runs-on: windows-latest
     outputs:
+      description: $ {{ steps.meta.outputs.description }}
+      changeinfo: $ {{ steps.meta.outputs.changeinfo }}
       version: ${{ steps.v.outputs.version }}
     steps:
+    - name : Get Meta Data
+      shell: pwsh
+      id: meta
+      run: |
+        [xml]$xml = get-content "src\AspNetCore.MailKitMailer\AspNetCore.MailKitMailer.csproj"    
+        $description = $xml.SelectSingleNode("//Description").InnerText;
+        $changes = $xml.SelectSingleNode("//PackageReleaseNotes").InnerText;
+        Write-Output "::set-output name=description::$($description.Trim())"
+        Write-Output "::set-output name=changeinfo::$($changes.Trim())"
     - name: Checkout Sources
       uses: actions/checkout@v2
       with:
@@ -93,25 +104,12 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Get Description
-        id: description
-        uses: mavrosxristoforos/get-xml-info@1.0
-        with:
-          xml-file: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
-          xpath: '//Description/text()'
+    
       - name: Print Description
         id: printdescription
-        run: echo '${{steps.description.outputs.result}}'
-      - name: Get Change Info
-        id: info
-        uses: QwerMike/xpath-action@v1
-        with:
-          filename: src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj
-          expression: '//PackageReleaseNotes/text()'
-
+        run: echo '${{needs.prepublish.outputs.description}}'
       - name: Print Change Info
-        run: echo '${{ steps.info.outputs.result  }}'
-
+        run: echo '${{ needs.prepublish.outputs.changeinfo }}'
       - name: Create Release and Tag
         id: create_release
         uses: actions/create-release@latest
@@ -122,10 +120,10 @@ jobs:
           release_name: Release v${{ needs.prepublish.outputs.version  }}
           body: |
            # About
-           ${{ steps.description.outputs.result }}
+           ${{needs.prepublish.outputs.description}}
 
            # Changes in v${{ needs.prepublish.outputs.version  }}
-           ${{ steps.info.outputs.result  }}
+           ${{needs.prepublish.outputs.changeinfo}}
           draft: false
           prerelease: false
       - name: Setup .net core 3.1
