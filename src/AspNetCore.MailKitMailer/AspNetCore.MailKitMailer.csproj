@@ -19,12 +19,12 @@
     <Description>
 <![CDATA[
 ## Important
-This is a .net 5 compiled version.
+This is a .NET 5 compiled version.
 Users who use .net 6 please install the `1.2.x` package versions.
 Users who use .net core 3.1 please install the `1.0.x` versions
 		
 ## What is this?
-An slim and simple client to handle HTML Mails in .net core 6+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.
+An slim and simple client to handle HTML Mails in .NET 5.x for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.
 ]]>
 	</Description>
 	<Copyright>2021 Malte Peters</Copyright>

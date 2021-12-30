@@ -1,7 +1,7 @@
-name: Release 1.0.x
+name: Release 1.1.x
 on:
   push:
-    branches: [ release-1.0.x ]   
+    branches: [ release-1.1.x ]   
 
 jobs:
   test:
@@ -69,7 +69,7 @@ jobs:
 
         $versionParts = $parsedBranchName.Split('.')
         $versionPrefix = "$($versionParts[0]).$($versionParts[1])" 
-        $startVersion = [version]::Parse("$($versionPrefix).3")
+        $startVersion = [version]::Parse("$($versionPrefix).0")
         # Get Git Tags
         $gitTags = @(git tag --list --sort=-version:refname "v$($versionPrefix).*")
         $newVersion = [version]::Parse("$($startVersion.Major).$($startVersion.Minor).$($startVersion.Build)")
