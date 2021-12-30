@@ -22,7 +22,6 @@ jobs:
           dotnet test
 
   prepublish:
-    needs: test
     runs-on: windows-latest
     outputs:
       version: ${{ steps.v.outputs.version }}
