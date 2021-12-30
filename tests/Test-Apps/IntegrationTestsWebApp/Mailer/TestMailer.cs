@@ -11,6 +11,7 @@ namespace IntegrationTestsWebApp.Mailer
 {
     public interface ITestMailer:IMailerContext
     {
+        IMailerContextResult Test_Attachment_Download(Uri attachmentUri);
         IMailerContextResult Test_Single_Values(SingleValuePayload payload);
         IMailerContextResult Test_Multiple_Values(Models.MultiValuePayload payload);
         IMailerContextResult Test_Attachment(string attachmentPath);
@@ -22,6 +23,7 @@ namespace IntegrationTestsWebApp.Mailer
         {
         }
 
+
         public IMailerContextResult Test_Attachment(string attachmentPath)
         {
 
@@ -31,7 +33,20 @@ namespace IntegrationTestsWebApp.Mailer
                 "Test-Attachment",
                 null,
                 null,
-                x => x.Add(attachmentPath) 
+                x => x.Add(attachmentPath)
+                );
+        }
+
+        public IMailerContextResult Test_Attachment_Download(Uri attachmentUri)
+        {
+
+
+            return HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-Attachment Download",
+                null,
+                null,
+                x => x.Add(attachmentUri)
                 );
         }
 
