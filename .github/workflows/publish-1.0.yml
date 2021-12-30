@@ -28,6 +28,11 @@ jobs:
       changeinfo: $ {{ steps.meta.outputs.changeinfo }}
       version: ${{ steps.v.outputs.version }}
     steps:
+    
+    - name: Checkout Sources
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
     - name : Get Meta Data
       shell: pwsh
       id: meta
@@ -37,10 +42,6 @@ jobs:
         $changes = $xml.SelectSingleNode("//PackageReleaseNotes").InnerText;
         Write-Output "::set-output name=description::$($description.Trim())"
         Write-Output "::set-output name=changeinfo::$($changes.Trim())"
-    - name: Checkout Sources
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
     - name: Generate Version Number
       shell: pwsh
       id: v
