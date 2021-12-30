@@ -6,7 +6,7 @@
 This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 6.x
 
 
-## Older Versions
+## Other Versions
 For best support look at the table below please:
 
 Each minor version has its own support for each .net version.
