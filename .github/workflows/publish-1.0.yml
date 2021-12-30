@@ -24,8 +24,8 @@ jobs:
   prepublish:
     runs-on: windows-latest
     outputs:
-      description: $ {{ steps.meta.outputs.description }}
-      changeinfo: $ {{ steps.meta.outputs.changeinfo }}
+      description: ${{ steps.meta.outputs.description }}
+      changeinfo: ${{ steps.meta.outputs.changeinfo }}
       version: ${{ steps.v.outputs.version }}
     steps:
     
