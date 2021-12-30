@@ -40,8 +40,8 @@ jobs:
         [xml]$xml = get-content "src\AspNetCore.MailKitMailer\AspNetCore.MailKitMailer.csproj"    
         $description = $xml.SelectSingleNode("//Description").InnerText;
         $changes = $xml.SelectSingleNode("//PackageReleaseNotes").InnerText;
-        Write-Output "::set-output name=description::$($description.Trim() | ConvertTo-Json)"
-        Write-Output "::set-output name=changeinfo::$($changes.Trim() | ConvertTo-Json)"
+        Write-Output "::set-output name=description::$($description.Trim().Replace("`t", '') | ConvertTo-Json)"
+        Write-Output "::set-output name=changeinfo::$($changes.Trim().Replace("`t", '') | ConvertTo-Json)"
     - name: Generate Version Number
       shell: pwsh
       id: v
