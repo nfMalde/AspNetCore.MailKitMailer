@@ -11,9 +11,8 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Removed obsolete WebClient and added http client instead.
-* Fixed Attachment Builder for filedownload when no content type is set
-* Attachment Builder now respects the Content-Disposition  Header if no filename in url is found
+* Upgraded to HTMLAgillity Pack .40
+* Upgraded to MailKit 3.1.x
 ]]>
 	</PackageReleaseNotes>
     <Description>
@@ -35,8 +34,8 @@ An slim and simple client to handle HTML Mails in .NET 5.x for Mailkit. This cli
 
   <ItemGroup>
 	<None Include="..\..\nugetdocs\README.MD" Pack="true" PackagePath="\" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.39" />
-    <PackageReference Include="MailKit" Version="3.0.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.40" />
+    <PackageReference Include="MailKit" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.13" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
