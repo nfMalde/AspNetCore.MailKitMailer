@@ -11,9 +11,8 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Removed obsolete WebClient and added http client instead.
-* Fixed Attachment Builder for filedownload when no content type is set
-* Attachment Builder now respects the Content-Disposition  Header if no filename in url is found
+* Upgraded to HTMLAgillity Pack .40
+* Upgraded to MailKit 3.1.x
 ]]>
 	</PackageReleaseNotes>
     <Description>
