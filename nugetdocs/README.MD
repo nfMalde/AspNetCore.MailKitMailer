@@ -329,6 +329,7 @@ If you like my work and want to support me (or want to buy me a coffee/beer) pay
 
 Version | Changes 
 ------------ | ------------
+1.2.2 | Updated Dependecies for .NET 6
 1.1.1 | Updated Changed Log for 1.1.x
 1.1.0 | Initial .NET 5 Release
 1.0.2 | Updated Examples
