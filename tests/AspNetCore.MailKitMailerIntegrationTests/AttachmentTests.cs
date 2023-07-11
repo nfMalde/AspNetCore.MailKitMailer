@@ -54,7 +54,7 @@ namespace AspNetCore.MailKitMailerIntegrationTests
 
             Assert.Equal("TestDownload", attachment.BodyData);
 
-            await dlserver.StopAsync();
+            await this.StopDownloadServer();
         }
 
         [Fact]
@@ -76,7 +76,8 @@ namespace AspNetCore.MailKitMailerIntegrationTests
 
             Assert.Equal("TestDownload2", attachment.BodyData);
 
-            await dlserver.StopAsync();
+
+            await this.StopDownloadServer();
         }
     }
 }

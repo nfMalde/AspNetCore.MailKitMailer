@@ -27,6 +27,8 @@ namespace AspNetCore.MailKitMailerIntegrationTests.Abstracts
         protected readonly IHost server;
         protected readonly HttpClient client;
         protected SimpleSmtpServer mailServer;
+        static WebApplication dlServer;
+
         public MailTestAbstracts()
         {
             // Create smtp server
@@ -84,7 +86,7 @@ namespace AspNetCore.MailKitMailerIntegrationTests.Abstracts
             builder.WebHost.UseUrls("http://localhost:3333/");
 
             var app = builder.Build();
-
+           
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
@@ -139,7 +141,19 @@ namespace AspNetCore.MailKitMailerIntegrationTests.Abstracts
 
             app.Start();
 
+            dlServer = app;
+
             return app;
+        }
+
+        protected async Task StopDownloadServer()
+        {
+            if (dlServer != null)
+            {
+                await dlServer.StopAsync();
+                await dlServer.DisposeAsync();
+                dlServer = null;
+            }
         }
 
         protected HttpContent MakeContent<T>(T content) where T:class
