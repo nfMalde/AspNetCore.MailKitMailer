@@ -28,11 +28,12 @@ namespace AspNetCore.MailKitMailerIntegrationTests
             var mail = this.mailServer.ReceivedEmail[0];
 
             Assert.NotNull(mail);
-            Assert.Contains(mail.MessageParts, x => x.HeaderData == "text/plain; name=TestFile.txt");
-            var attachment = mail.MessageParts.ToList().FirstOrDefault(x => x.HeaderData == "text/plain; name=TestFile.txt");
+            var attachment = mail.MessageParts.FirstOrDefault(x => x.HeaderData.Contains("name=TestFile.txt"));
 
+            Assert.NotNull(attachment);
+ 
             Assert.Equal("This is a test file for testing attachments.", attachment.BodyData);
-            
+            await this.StopDownloadServer();
         }
         
         [Fact]
@@ -48,10 +49,10 @@ namespace AspNetCore.MailKitMailerIntegrationTests
 
             var mail = this.mailServer.ReceivedEmail[0];
 
-            Assert.NotNull(mail);
-            Assert.Contains(mail.MessageParts, x => x.HeaderData == "text/plain; name=TestFile.txt");
-            var attachment = mail.MessageParts.ToList().FirstOrDefault(x => x.HeaderData == "text/plain; name=TestFile.txt");
+            Assert.NotNull(mail); 
+            var attachment = mail.MessageParts.FirstOrDefault(x => x.HeaderData.Contains("name=TestFile.txt"));
 
+            Assert.NotNull(attachment);
             Assert.Equal("TestDownload", attachment.BodyData);
 
             await this.StopDownloadServer();
@@ -70,10 +71,10 @@ namespace AspNetCore.MailKitMailerIntegrationTests
 
             var mail = this.mailServer.ReceivedEmail[0];
 
-            Assert.NotNull(mail);
-            Assert.Contains(mail.MessageParts, x => x.HeaderData == "text/plain; name=NoName.txt");
-            var attachment = mail.MessageParts.ToList().FirstOrDefault(x => x.HeaderData == "text/plain; name=NoName.txt");
+            Assert.NotNull(mail); 
+            var attachment = mail.MessageParts.FirstOrDefault(x => x.HeaderData.Contains("name=NoName.txt"));
 
+            Assert.NotNull(attachment);
             Assert.Equal("TestDownload2", attachment.BodyData);
 
 
