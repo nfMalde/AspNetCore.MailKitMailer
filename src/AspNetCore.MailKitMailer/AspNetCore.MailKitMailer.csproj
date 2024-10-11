@@ -11,17 +11,16 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Updated dependencies
-* Removed obsolete WebClient and added http client instead
-* Fixed Attachment Builder for filedownload when no content type is set
-* Attachment Builder now respects the Content-Disposition  Header if no filename in url is found
-* Created .NET 6 compiled version using updated dependencies
+* Added support for .NET 8
+* Updated to latest packages
+* Upgraded API
 ]]>
 	</PackageReleaseNotes>
     <Description>
 <![CDATA[
 ## Important
-This is a .NET 6 compiled version.
+This is a .NET 8 compiled version.
+Users who use .net 8 please install the `1.2.x` package versions.
 Users who use .net 5 please install the `1.1.x` package versions.
 Users who use .net core 3.1 please install the `1.0.x` versions
 		
@@ -31,7 +30,7 @@ An slim and simple client to handle HTML Mails in .net core 6+ for Mailkit. This
 	</Description>
     <Copyright>2021 Malte Peters</Copyright>
 	<PackageReadmeFile>README.MD</PackageReadmeFile>
-	<Version>1.0.2</Version>
+	<Version>2.0.0</Version>
 
   </PropertyGroup>
 
