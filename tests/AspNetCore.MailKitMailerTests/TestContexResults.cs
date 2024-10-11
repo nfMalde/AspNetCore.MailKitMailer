@@ -80,7 +80,7 @@ namespace AspNetCore.MailKitMailerTests
             mailClient.Send<ITestMailer>(expression);
 
 
-            Assert.AreEqual(expectedView, actualViewName);
+            Assert.That(expectedView == actualViewName);
         }
     }
 }

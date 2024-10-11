@@ -1,20 +1,20 @@
-name: .NET
+name: Build 2.0.x
 
 on:
   push:
-    branches: [ main ]
+    branches: [ 2.0.x ]
   pull_request:
-    branches: [ main ]
+    branches: [ 2.0.x, release-2.0.x ] 
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 8.0.x
     - name: Restore dependencies
