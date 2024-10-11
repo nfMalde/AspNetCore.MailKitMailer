@@ -17,6 +17,7 @@ Future major releases are only released for the next, current and lts support ve
 .NET Core 3.1 | 1.0.x | [1.0.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.0.x)
 .NET 5 | 1.1.x | [1.1.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.1.x)
 .NET 6 | 1.2.x | [1.2.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.2.x)
+.NET 8 | 2.0.x | [2.0.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/2.0.x)
 
 
 
@@ -331,6 +332,7 @@ If you like my work and want to support me (or want to buy me a coffee/beer) pay
 
 Version | Changes 
 ------------ | ------------
+2.0.0 | Upgraded to .net8 
 1.2.2 | Updated Dependecies for .NET 6
 1.1.1 | Updated Changed Log for 1.1.x
 1.1.0 | Initial .NET 5 Release
