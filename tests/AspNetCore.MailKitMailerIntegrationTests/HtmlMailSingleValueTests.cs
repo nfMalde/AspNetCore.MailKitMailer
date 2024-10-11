@@ -76,7 +76,7 @@ namespace AspNetCore.MailKitMailerIntegrationTests
                 /// bcc is different and not listed in the headers.
                 /// But in our test server case its in the "to_addresses" field.
                 /// 
-                var bccaddr = mail.ToAddresses.FirstOrDefault(x => x.Address == payload.Bcc.Email);
+                var bccaddr = mail.BccAddresses.FirstOrDefault(x => x.Address == payload.Bcc.Email);
                 Assert.NotNull(bccaddr);
 
                 Assert.Equal(payload.Bcc.Name, bccaddr.Username);
