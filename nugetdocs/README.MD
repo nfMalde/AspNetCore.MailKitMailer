@@ -222,6 +222,31 @@ namespace MailKitMailerExample.Controllers
 As we see we are injecting the mail client and calling our contex to prepare the message.
 Then we are sending it, in one line.
 
+#### Retrieving the rendered mail content
+With Version 2.0.1 added: The `GetContentAsync` Method
+It renders the html body of your context call and returns the HTML as string.
+
+Helpfull to display your email in a browser or for debugging your styles.
+
+```C#
+namespace MailKitMailerExample.Mailer.Controllers
+{
+    public class TestController(IMailClient client) : Controller
+    { 
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> DebugMail()
+        {
+             
+             string content = await client.GetContentAsync<ITestMailer>(x => x.Test_Single_Values(payload));
+
+            return Content(content, "text/html");
+        } 
+    }
+}
+
+```
+
 #### Default Values
 Our contex can provide an load of default values. Lets assume our welcome mail should go also  to "admin@example.com":
 
@@ -329,6 +354,7 @@ If you like my work and want to support me (or want to buy me a coffee/beer) pay
 
 Version | Changes 
 ------------ | ------------
+2.0.1 | Added "GetContentAsync" Method to render the HTML without sending the mail
 2.0.0 | Upgraded to .net8 
 1.2.2 | Updated Dependecies for .NET 6
 1.1.1 | Updated Changed Log for 1.1.x

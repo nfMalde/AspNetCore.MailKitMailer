@@ -357,6 +357,7 @@ If you like my work and want to support me (or want to buy me a coffee/beer) pay
 
 Version | Changes 
 ------------ | ------------
+2.0.1 | Added "GetContentAsync" Method to render the HTML without sending the mail
 2.0.0 | Upgraded to .net8 
 1.2.2 | Updated Dependecies for .NET 6
 1.1.1 | Updated Changed Log for 1.1.x
