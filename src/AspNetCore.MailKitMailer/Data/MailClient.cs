@@ -155,6 +155,26 @@ namespace AspNetCore.MailKitMailer.Data
             ctx.OnAfterSend(this.serviceProvider);
 
         }
+        /// <summary>
+        /// Asynchronously gets the content of the email based on the provided context.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the mailer context.</typeparam>
+        /// <param name="contextBuilder">The context builder expression.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the email content as a string.</returns>
+        public async Task<string?> GetContentAsync<TContext>(Expression<Func<TContext, IMailerContextResult>> contextBuilder) where TContext : class, IMailerContext
+        {
+            TContext? ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
+           
+            if (ctx == null)
+            {
+                throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
+            }
+
+            IMailerContextResult result = this._CompileMailerContext<TContext>(contextBuilder);
+
+           return  await this._RenderView(result, ctx);    
+
+        }
 
         /// <summary>
         /// Prepares the <see cref="MimeMessage"/> message.
