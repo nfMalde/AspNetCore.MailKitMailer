@@ -22,7 +22,7 @@ namespace IntegrationTestsWebApp.Controllers
         [HttpPost("single-sync")]
         public IActionResult SendWithSingleValueSync([FromBody] SingleValuePayload payload)
         {
-
+            client.GetContentAsync<ITestMailer>(x => x.Test_Single_Values(payload));
             this.client.Send<ITestMailer>(x => x.Test_Single_Values(payload));
 
             return Ok();
