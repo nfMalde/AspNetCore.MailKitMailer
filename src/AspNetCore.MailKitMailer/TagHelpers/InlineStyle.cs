@@ -107,7 +107,7 @@ namespace AspNetCore.MailKitMailer.TagHelpers
             string path = Href;
             string cachekey = "AspNetCoreMailKitMailer__InlineStyleTagHelper-" + path;
 
-            string fileContent = null;
+            string? fileContent = null;
             // Get the value from the cache, or compute the value and add it to the cache
             IMemoryCache cache = this.serviceProvider.GetService(typeof(IMemoryCache)) as IMemoryCache;
             IDistributedCache distributedCache = this.serviceProvider.GetService(typeof(IDistributedCache)) as IDistributedCache;
@@ -120,6 +120,12 @@ namespace AspNetCore.MailKitMailer.TagHelpers
                 {
                     return await this._ManageCacheEntry(entry, path);
                 });
+
+                if (fileContent == null)
+                {
+                    fileContent = await ReadFileContent(file);
+                    cache.Set(cachekey, fileContent);
+                }
 
             }
             else if (distributedCache != null)
