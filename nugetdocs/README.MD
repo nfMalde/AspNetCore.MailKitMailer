@@ -125,6 +125,53 @@ Add the following files with its contents for the start:
 </html>
 ```
 
+#### Using the "partial" Tag Helper
+In order to use the partial tag helper  `<partial name="viewname" for="Model"/>` you  need to adjust your settings.
+
+##### 1. Create a CustomViewLocationExpander class
+To add the "Mailer-Views" path to the actual razor view lookup paths you need an LocatioExpander Class of type `IViewLocationExpander`.
+```C#
+ public class CustomViewLocationExpander : IViewLocationExpander
+ {
+     public void PopulateValues(ViewLocationExpanderContext context)
+     {
+         // Can use context to add custom values based on route or other data
+     }
+
+     public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
+     {
+         // Add custom locations
+         return new[]
+         {
+         "/Mailer-Views/{1}/{0}.cshtml", // Add Mailer Views to the context
+     }.Concat(viewLocations); // Ensure default locations are preserved
+     }
+ }
+```
+##### 2. Configure the razor view engine using your ViewLocationExpander Class
+Now head to your `Program.cs` or for old approach `Startup.cs`.
+
+Add to your services:
+
+```C#
+// New approach
+builder.Services.Configure<RazorViewEngineOptions>(options =>
+{
+    options.ViewLocationExpanders.Add(new CustomViewLocationExpander());
+});
+
+// Old approach
+public void ConfigureServices(IServiceCollection services)
+{
+   services.Configure<RazorViewEngineOptions>(options =>
+   {
+       options.ViewLocationExpanders.Add(new CustomViewLocationExpander());
+   });
+}
+```
+
+Now the partial view tag helper which is built-in will look into our Mailer-Views folder. 
+
 Now your view folder is set up for using the mailer.
 ### Creating your contex
 
@@ -354,6 +401,7 @@ If you like my work and want to support me (or want to buy me a coffee/beer) pay
 
 Version | Changes 
 ------------ | ------------
+2.0.2 | Fixed a bug where the memory cache for the CSS Inline Style Helper returned empty string or null instead of reading the actual file.
 2.0.1 | Added "GetContentAsync" Method to render the HTML without sending the mail
 2.0.0 | Upgraded to .net8 
 1.2.2 | Updated Dependecies for .NET 6
