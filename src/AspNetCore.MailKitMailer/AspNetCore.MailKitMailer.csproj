@@ -12,7 +12,7 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Added "GetContent" Method to retrieve the rendered content as string (See readme for examples)
+* Fixed a bug where the memory cache for the CSS Inline Style Helper returned empty string or null instead of reading the actual file.
 ]]>
 	</PackageReleaseNotes>
     <Description>
