@@ -1,7 +1,7 @@
-[![Nuget](https://img.shields.io/nuget/v/AspNetCore.MailKitMailerAspNetCore.MailKitMailer?style=flat-square)](https://www.nuget.org/packages/AspNetCore.MailKitMailerAspNetCore.MailKitMailer/) 
-[![Downloads](https://img.shields.io/nuget/dt/AspNetCore.MailKitMailerAspNetCore.MailKitMailer)](https://www.nuget.org/packages/AspNetCore.MailKitMailerAspNetCore.MailKitMailer/)
+[![Nuget](https://img.shields.io/nuget/v/AspNetCore.MailKitMailer?style=flat-square)](https://www.nuget.org/packages/AspNetCore.MailKitMailer/) 
+[![Downloads](https://img.shields.io/nuget/dt/AspNetCore.MailKitMailer)](https://www.nuget.org/packages/AspNetCore.MailKitMailer/)
 [![Paypal Donate](https://img.shields.io/badge/donate-paypal-blue)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
-[![Pull Request Check](https://img.shields.io/github/actions/workflow/status/nfMalde/AspNetCore.MailKitMailerAspNetCore.MailKitMailer/pr.yml)](https://github.com/nfMalde/AspNetCore.MailKitMailerAspNetCore.MailKitMailer/actions/workflows/pr.yml)
+[![Pull Request Check](https://img.shields.io/github/actions/workflow/status/nfMalde/AspNetCore.MailKitMailer/pr.yml)](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/pr.yml)
 # AspNetCore.MailKitMailer (by Malte)
 This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 6.x
 
