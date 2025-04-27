@@ -30,7 +30,7 @@ namespace AspNetCore.MailKitMailer.Models
         /// <value>
         /// The name.
         /// </value>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the email.
@@ -38,6 +38,6 @@ namespace AspNetCore.MailKitMailer.Models
         /// <value>
         /// The email.
         /// </value>
-        public string Email { get; set; }
+        public string? Email { get; set; }
     }
 }

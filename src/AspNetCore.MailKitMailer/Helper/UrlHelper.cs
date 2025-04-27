@@ -25,11 +25,11 @@ namespace AspNetCore.MailKitMailer.Helper
         /// <param name="controllerName">The name of the controller.</param>
         /// <param name="routeValues">The route values.</param>
         /// <returns>The absolute URL.</returns>
-        public static string MailerAbsoluteAction(
+        public static string? MailerAbsoluteAction(
             this IUrlHelper url,
             string actionName,
             string controllerName,
-            object routeValues = null)
+            object? routeValues = null)
         {
             return url.Action(actionName, controllerName, routeValues, url.ActionContext.HttpContext.Request.Scheme);
         }
@@ -56,10 +56,10 @@ namespace AspNetCore.MailKitMailer.Helper
         /// <param name="routeName">Name of the route.</param>
         /// <param name="routeValues">The route values.</param>
         /// <returns>The absolute URL.</returns>
-        public static string MailerAbsoluteRouteUrl(
+        public static string? MailerAbsoluteRouteUrl(
             this IUrlHelper url,
             string routeName,
-            object routeValues = null)
+            object? routeValues = null)
         {
             return url.RouteUrl(routeName, routeValues, url.ActionContext.HttpContext.Request.Scheme);
         }

@@ -40,7 +40,7 @@ namespace AspNetCore.MailKitMailer.Domain
         /// <value>
         /// From.
         /// </value>
-        EmailAddressModel From { get; set; }
+        EmailAddressModel? From { get; set; }
 
         /// <summary>
         /// Called when [before send].

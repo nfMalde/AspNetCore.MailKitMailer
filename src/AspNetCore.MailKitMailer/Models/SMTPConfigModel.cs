@@ -15,7 +15,7 @@ namespace AspNetCore.MailKitMailer.Models
         /// <value>
         /// The host.
         /// </value>
-        public string Host { get; set; }
+        public string? Host { get; set; }
 
         /// <summary>
         /// Gets or sets the port.
@@ -23,7 +23,7 @@ namespace AspNetCore.MailKitMailer.Models
         /// <value>
         /// The port.
         /// </value>
-        public int Port { get; set; } = 0;
+        public int Port { get; set; } = 25;
 
         /// <summary>
         /// Gets or sets the username.
@@ -31,7 +31,7 @@ namespace AspNetCore.MailKitMailer.Models
         /// <value>
         /// The username.
         /// </value>
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
@@ -39,7 +39,7 @@ namespace AspNetCore.MailKitMailer.Models
         /// <value>
         /// The password.
         /// </value>
-        public string Password { get; set; }
+        public string? Password { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [use SSL].
@@ -72,6 +72,6 @@ namespace AspNetCore.MailKitMailer.Models
         /// <value>
         /// From address.
         /// </value>
-        public EmailAddressModel FromAddress { get; set; }
+        public EmailAddressModel? FromAddress { get; set; }
     }
 }
