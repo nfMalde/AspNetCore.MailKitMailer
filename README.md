@@ -1,7 +1,7 @@
-[![Nuget](https://img.shields.io/nuget/v/AspNetCore.MailKitMailer?style=flat-square)](https://www.nuget.org/packages/AspNetCore.MailKitMailer/) 
- [![Downloads](https://img.shields.io/nuget/dt/AspNetCore.MailKitMailer?style=flat-square)](https://www.nuget.org/packages/AspNetCore.MailKitMailer/)
- [![Paypal Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
-[![.NET](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/build-master.yml/badge.svg?branch=main)](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/build-master.yml)
+[![Nuget](https://img.shields.io/nuget/v/AspNetCore.MailKitMailerAspNetCore.MailKitMailer?style=flat-square)](https://www.nuget.org/packages/AspNetCore.MailKitMailerAspNetCore.MailKitMailer/) 
+[![Downloads](https://img.shields.io/nuget/dt/AspNetCore.MailKitMailerAspNetCore.MailKitMailer)](https://www.nuget.org/packages/AspNetCore.MailKitMailerAspNetCore.MailKitMailer/)
+[![Paypal Donate](https://img.shields.io/badge/donate-paypal-blue)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
+[![Pull Request Check](https://img.shields.io/github/actions/workflow/status/nfMalde/AspNetCore.MailKitMailerAspNetCore.MailKitMailer/pr.yml)](https://github.com/nfMalde/AspNetCore.MailKitMailerAspNetCore.MailKitMailer/actions/workflows/pr.yml)
 # AspNetCore.MailKitMailer (by Malte)
 This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 6.x
 
@@ -398,19 +398,4 @@ If you got any Ideas to improve my projects feel free to send an pull request.
 
 If you like my work and want to support me (or want to buy me a coffee/beer) paypal donation are more than appreciated.
 
- [![Paypal Donate](https://www.paypalobjects.com/en_US/DK/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
-
-
-## Changelog
-
-Version | Changes 
------------- | ------------
-2.0.2 | Fixed a bug where the memory cache for the CSS Inline Style Helper returned empty string or null instead of reading the actual file.
-2.0.1 | Added "GetContentAsync" Method to render the HTML without sending the mail
-2.0.0 | Upgraded to .net8 
-1.2.2 | Updated Dependecies for .NET 6
-1.1.1 | Updated Changed Log for 1.1.x
-1.1.0 | Initial .NET 5 Release
-1.0.2 | Updated Examples
-1.0.1 | Updated Docs
-1.0.0 | Initial Release
+[![Paypal Donate](https://img.shields.io/badge/donate-paypal-blue)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using System;
@@ -56,7 +57,7 @@ namespace AspNetCore.MailKitMailer.Data
         /// <summary>
         /// The HTTP context accessor
         /// </summary>
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor? httpContextAccessor;
 
         private readonly HttpClient httpClient;
 
@@ -95,30 +96,7 @@ namespace AspNetCore.MailKitMailer.Data
         /// <param name="contextBuilder">The context builder.</param>
         public void Send<TContext>(Expression<Func<TContext, IMailerContextResult>> contextBuilder) where TContext : class, IMailerContext
         {
-            TContext ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
-            
-            if (ctx == null)
-            {
-                throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
-            }
-            
-            ctx.OnBeforeSend(this.serviceProvider);
-
-            IMailerContextResult result = this._CompileMailerContext<TContext>(contextBuilder);
-            MimeMessage message = this.PrepareMessage(this.serviceProvider.GetService(typeof(TContext)) as TContext, result).Result;
-            
-            this.client.CheckCertificateRevocation = this.smtpConfig.Value?.CheckCertificateRevocation ?? true;
-            this.client.Connect(this.smtpConfig.Value?.Host, this.smtpConfig.Value?.Port ?? 0, this.smtpConfig.Value?.UseSSL ?? false);
-           
-            if (this.smtpConfig.Value.DoAuthenticate)
-            {
-                this.client.Authenticate(this.smtpConfig.Value.Username, this.smtpConfig.Value.Password);
-            }
-
-            this.client.Send(message);
-
-            ctx.OnAfterSend(this.serviceProvider);
-
+            this.SendAsync(contextBuilder).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -129,7 +107,8 @@ namespace AspNetCore.MailKitMailer.Data
         /// <returns></returns>
         public async Task SendAsync<TContext>(Expression<Func<TContext, IMailerContextResult>> contextBuilder) where TContext : class, IMailerContext
         {
-            TContext ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
+            TContext? ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
+
             if (ctx == null)
             {
                 throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
@@ -139,13 +118,13 @@ namespace AspNetCore.MailKitMailer.Data
             ctx.OnBeforeSend(this.serviceProvider);
 
             IMailerContextResult result = this._CompileMailerContext<TContext>(contextBuilder);
-            MimeMessage message = await this.PrepareMessage(this.serviceProvider.GetService(typeof(TContext)) as TContext, result);
+            MimeMessage message = await this.PrepareMessage(this.serviceProvider.GetRequiredService<TContext>(), result);
 
             this.client.CheckCertificateRevocation = this.smtpConfig.Value?.CheckCertificateRevocation ?? true;
 
-            await this.client.ConnectAsync(this.smtpConfig.Value?.Host, this.smtpConfig.Value.Port, this.smtpConfig.Value.UseSSL);
+            await this.client.ConnectAsync(this.smtpConfig.Value?.Host, this.smtpConfig?.Value?.Port ?? 25, this.smtpConfig?.Value?.UseSSL ?? false);
 
-            if (this.smtpConfig.Value.DoAuthenticate)
+            if (this.smtpConfig?.Value?.DoAuthenticate ?? false)
             {
                 await this.client.AuthenticateAsync(this.smtpConfig.Value.Username, this.smtpConfig.Value.Password);
             }
@@ -244,7 +223,7 @@ namespace AspNetCore.MailKitMailer.Data
                 {
                     if (attachment.FilePath != null)
                     {
-                        MimePart att = null;
+                        MimePart? att = null;
 
                         if (attachment.ContenType != null)
                         {
@@ -276,7 +255,7 @@ namespace AspNetCore.MailKitMailer.Data
 
                             if (headers != null && headers.ContentDisposition != null)
                             {
-                                string cdname = headers.ContentDisposition.FileName;
+                                string? cdname = headers.ContentDisposition.FileName;
 
                                 if (!string.IsNullOrEmpty(cdname))
                                 {
@@ -286,7 +265,7 @@ namespace AspNetCore.MailKitMailer.Data
 
                         }
 
-                        MimePart att = null;
+                        MimePart? att = null;
 
                         if (attachment.ContenType != null)
                         {
@@ -426,14 +405,14 @@ namespace AspNetCore.MailKitMailer.Data
 
                 var viewContext = new ViewContext(
                     actionContext,
-                    viewResult.View,
+                    viewResult.View!,
                     viewDictionary,
                     new TempDataDictionary(actionContext.HttpContext, this.tempDataProvider),
                     sw,
                     new HtmlHelperOptions()
                 );
     
-                await viewResult.View.RenderAsync(viewContext);
+                await viewResult.View!.RenderAsync(viewContext);
 
                 return sw.ToString();
             }
@@ -453,7 +432,7 @@ namespace AspNetCore.MailKitMailer.Data
         /// </exception>
         private IMailerContextResult _CompileMailerContext<TContext>(Expression<Func<TContext, IMailerContextResult>> expression) where TContext : class, IMailerContext
         {
-            MethodCallExpression exp = expression.Body as MethodCallExpression;
+            MethodCallExpression? exp = expression.Body as MethodCallExpression;
 
             if (exp == null)
             {
@@ -464,7 +443,7 @@ namespace AspNetCore.MailKitMailer.Data
            
 
             // Load Mailer Context
-            TContext mailerContext = this.serviceProvider.GetService(typeof(TContext)) as TContext;
+            TContext? mailerContext = this.serviceProvider.GetService(typeof(TContext)) as TContext;
 
             if (mailerContext == null)
             {

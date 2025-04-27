@@ -4,7 +4,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,7 +42,7 @@ namespace AspNetCore.MailKitMailer.TagHelpers
             /// <value>
             /// The cache date.
             /// </value>
-            public DateTime CacheDate { get; set; }
+            public DateTime? CacheDate { get; set; }
 
             /// <summary>
             /// Gets or sets the content.
@@ -51,7 +50,7 @@ namespace AspNetCore.MailKitMailer.TagHelpers
             /// <value>
             /// The content.
             /// </value>
-            public string Content { get; set; }
+            public string? Content { get; set; }
         }
 
         /// <summary>
@@ -72,7 +71,7 @@ namespace AspNetCore.MailKitMailer.TagHelpers
         /// The href.
         /// </value>
         [HtmlAttributeName("href")]
-        public string Href { get; set; }
+        public string? Href { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [use content root].
@@ -104,14 +103,21 @@ namespace AspNetCore.MailKitMailer.TagHelpers
         /// .
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            string path = Href;
+            string? path = Href;
             string cachekey = "AspNetCoreMailKitMailer__InlineStyleTagHelper-" + path;
 
             string? fileContent = null;
             // Get the value from the cache, or compute the value and add it to the cache
-            IMemoryCache cache = this.serviceProvider.GetService(typeof(IMemoryCache)) as IMemoryCache;
-            IDistributedCache distributedCache = this.serviceProvider.GetService(typeof(IDistributedCache)) as IDistributedCache;
+            IMemoryCache? cache = this.serviceProvider.GetService(typeof(IMemoryCache)) as IMemoryCache;
+            IDistributedCache? distributedCache = this.serviceProvider.GetService(typeof(IDistributedCache)) as IDistributedCache;
             IFileProvider fileProvider = this.UseContentRoot ? this.hostingEnvironment.ContentRootFileProvider : this.hostingEnvironment.WebRootFileProvider;
+            
+            if (string.IsNullOrEmpty(path))
+            {
+                output.SuppressOutput();
+                return;
+            }
+
             IFileInfo file = fileProvider.GetFileInfo(path);
 
             if ((this.ForceMemoryCache || distributedCache == null) && cache != null)
@@ -130,9 +136,9 @@ namespace AspNetCore.MailKitMailer.TagHelpers
             }
             else if (distributedCache != null)
             {
-                string _entryContent = await distributedCache.GetStringAsync(cachekey);
+                string? _entryContent = await distributedCache.GetStringAsync(cachekey);
 
-                var entry = !string.IsNullOrEmpty(_entryContent) ? JsonConvert.DeserializeObject<DCacheEntry>(_entryContent) : null;
+                var entry = !string.IsNullOrEmpty(_entryContent) ? System.Text.Json.JsonSerializer.Deserialize<DCacheEntry>(_entryContent) : null;
 
                 fileContent = entry?.Content;
 
@@ -150,7 +156,7 @@ namespace AspNetCore.MailKitMailer.TagHelpers
                     fileContent = await ReadFileContent(file);
 
 
-                    string obj = JsonConvert.SerializeObject(new DCacheEntry()
+                    string obj = System.Text.Json.JsonSerializer.Serialize(new DCacheEntry()
                     {
                         CacheDate = file.LastModified.LocalDateTime,
                         Content = fileContent
@@ -198,7 +204,7 @@ namespace AspNetCore.MailKitMailer.TagHelpers
         /// <param name="entry">The entry.</param>
         /// <param name="path">The path.</param>
         /// <returns></returns>
-        private async Task<string> _ManageCacheEntry(ICacheEntry entry, string path)
+        private async Task<string?> _ManageCacheEntry(ICacheEntry entry, string path)
         {
 
             IFileProvider fileProvider = this.hostingEnvironment.WebRootFileProvider;
