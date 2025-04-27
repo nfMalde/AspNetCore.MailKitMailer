@@ -133,8 +133,8 @@ namespace AspNetCore.MailKitMailerIntegrationTests.Abstracts
                     Inline = false  // false = prompt the user for downloading;  true = browser to try to show the file inline
                 };
 
-                httpContext.Response.Headers.Add("Content-Disposition", cd.ToString());
-                httpContext.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+                httpContext.Response.Headers.Append("Content-Disposition", cd.ToString());
+                httpContext.Response.Headers.Append("X-Content-Type-Options", "nosniff");
 
                 await httpContext.Response.SendFileAsync(filePath);
             });

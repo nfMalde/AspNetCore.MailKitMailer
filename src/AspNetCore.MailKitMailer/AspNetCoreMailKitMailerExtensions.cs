@@ -31,7 +31,7 @@ namespace AspNetCore.MailKitMailer
         /// <param name="configuration">The configuration.</param>
         /// <param name="configureClient">Action to configure the smtp client defaults.</param>
         /// <returns></returns>
-        public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, IConfiguration configuration, Action<SmtpClient> configureClient = null)
+        public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, IConfiguration configuration, Action<SmtpClient>? configureClient = null)
         {
             services = CheckForHttpClient(services);
             services.Configure<Models.SMTPConfigModel>(x => configuration.GetSection("MailKitMailer").Bind(x));
@@ -58,7 +58,7 @@ namespace AspNetCore.MailKitMailer
         /// <param name="smtpconfig">The smtpconfig.</param>
         /// <param name="configureClient">The configure client.</param>
         /// <returns></returns>
-        public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, Models.SMTPConfigModel smtpconfig, Action<SmtpClient> configureClient = null)
+        public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, Models.SMTPConfigModel smtpconfig, Action<SmtpClient>? configureClient = null)
         {
             services = CheckForHttpClient(services);
             services.Configure<Models.SMTPConfigModel>(x => {
@@ -67,7 +67,7 @@ namespace AspNetCore.MailKitMailer
                 {
                     if (smtpconfig.GetType().GetProperty(p.Name) != null)
                     {
-                        p.SetValue(x, smtpconfig.GetType().GetProperty(p.Name).GetValue(smtpconfig));
+                        p.SetValue(x, smtpconfig.GetType().GetProperty(p.Name)!.GetValue(smtpconfig));
                     }
                 }); 
             });
@@ -101,7 +101,7 @@ namespace AspNetCore.MailKitMailer
         /// <param name="port">The port.</param>
         /// <param name="UseSSL">if set to <c>true</c> [use SSL].</param>
         /// <returns></returns>
-        public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, string fromAddress, string fromName, string host, string username, string password, int port, bool UseSSL, Action<SmtpClient> configureClient = null)
+        public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, string fromAddress, string fromName, string host, string username, string password, int port, bool UseSSL, Action<SmtpClient>? configureClient = null)
         {
             services = CheckForHttpClient(services);
             services.Configure<Models.SMTPConfigModel>(x => x = new Models.SMTPConfigModel()
@@ -154,7 +154,7 @@ namespace AspNetCore.MailKitMailer
         /// <returns></returns>
         public static IServiceCollection RegisterAllMailContexOfAssemblyContainingType<TContaining>(this IServiceCollection services)
         {
-            return RegisterAllMailContexesOfAssembly(services, Assembly.GetAssembly(typeof(TContaining)));
+            return RegisterAllMailContexesOfAssembly(services, Assembly.GetAssembly(typeof(TContaining))!);
         }
 
 

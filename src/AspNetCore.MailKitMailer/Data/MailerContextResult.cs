@@ -21,28 +21,28 @@ namespace AspNetCore.MailKitMailer.Data
         /// <value>
         /// The view.
         /// </value>
-        public string View { get; set; }
+        public string? View { get; set; }
         /// <summary>
         /// Gets or sets the model.
         /// </summary>
         /// <value>
         /// The model.
         /// </value>
-        public object Model { get; set; }
+        public object? Model { get; set; }
         /// <summary>
         /// Gets or sets the subject.
         /// </summary>
         /// <value>
         /// The subject.
         /// </value>
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
         /// <summary>
         /// Gets or sets from.
         /// </summary>
         /// <value>
         /// From.
         /// </value>
-        public EmailAddressModel From { get; set; }
+        public EmailAddressModel? From { get; set; }
         /// <summary>
         /// Gets to.
         /// </summary>
@@ -78,7 +78,7 @@ namespace AspNetCore.MailKitMailer.Data
         /// <value>
         /// The text body.
         /// </value>
-        public string TextBody { get; set; }
+        public string? TextBody { get; set; }
 
         /// <summary>
         /// Gets the attachments.
@@ -86,7 +86,7 @@ namespace AspNetCore.MailKitMailer.Data
         /// <value>
         /// The attachments.
         /// </value>
-        public IAttachmentCollection Attachments { get; set; }
+        public IAttachmentCollection? Attachments { get; set; }
 
          
     }

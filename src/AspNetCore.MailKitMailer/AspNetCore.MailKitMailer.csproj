@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	  <Nullable>enable</Nullable>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -12,37 +12,35 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Fixed a bug where the memory cache for the CSS Inline Style Helper returned empty string or null instead of reading the actual file.
+* Updated to .NET 9
+* Updated to MailKit 4.11.0
+* Updated to Razor 9.0.4
+* Updated to HtmlAgilityPack 1.12.1
+* Removed Newtonsoft.Json dependency
+* Removed obsolete and unused package RestSharp
+* Improved nullability annotations
 ]]>
 	</PackageReleaseNotes>
     <Description>
 <![CDATA[
-## Important
-This is a .NET 8 compiled version.
-Users who use .net 8 please install the `1.2.x` package versions.
-Users who use .net 5 please install the `1.1.x` package versions.
-Users who use .net core 3.1 please install the `1.0.x` versions
-		
 ## What is this?
-An slim and simple client to handle HTML Mails in .net core 6+ for Mailkit. This client allows you to send e-mails via MailKit rendered by razor view engine including helpers for css inlining and absolute urls.
+A slim and simple client to handle HTML emails in .NET 9+ for MailKit. This client allows you to send emails via MailKit rendered by the Razor view engine, including helpers for CSS inlining and absolute URLs.
 ]]>
 	</Description>
-    <Copyright>2021 Malte Peters</Copyright>
+    <Copyright>2024 Malte Peters</Copyright>
 	<PackageReadmeFile>README.MD</PackageReadmeFile>
 	<Version>2.0.0</Version>
 
   </PropertyGroup>
 
   <ItemGroup>
-	<None Include="..\..\nugetdocs\README.MD" Pack="true" PackagePath="\" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.67" />
-    <PackageReference Include="MailKit" Version="4.8.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="112.1.0" />
+	<None Include="..\..\README.MD" Pack="true" PackagePath="\" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
+    <PackageReference Include="MailKit" Version="4.11.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.4" />
   </ItemGroup>
 
 </Project>

@@ -43,7 +43,7 @@ namespace AspNetCore.MailKitMailer.Data
         /// <value>
         /// From.
         /// </value>
-        public EmailAddressModel From { get; set; }
+        public EmailAddressModel? From { get; set; }
 
         /// <summary>
         /// Called when [after send].
@@ -76,9 +76,9 @@ namespace AspNetCore.MailKitMailer.Data
         protected IMailerContextResult HtmlMail(
             EmailAddressModel to, 
             string subject, 
-            object model = null,
-            string viewName = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null,
+            string? viewName = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>() { to },
@@ -108,9 +108,9 @@ namespace AspNetCore.MailKitMailer.Data
             EmailAddressModel to, 
             EmailAddressModel cc, 
             string subject,
-            object model = null, 
-            string viewName = null,
-            Action<IAttachmentCollection> withAttachments = null
+            object? model = null, 
+            string? viewName = null,
+            Action<IAttachmentCollection>? withAttachments = null
             )
         {
             return this._CreateResult(
@@ -142,9 +142,9 @@ namespace AspNetCore.MailKitMailer.Data
             EmailAddressModel cc, 
             EmailAddressModel bcc, 
             string subject, 
-            object model = null, 
-            string viewName = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null, 
+            string? viewName = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>() { to },
@@ -179,9 +179,9 @@ namespace AspNetCore.MailKitMailer.Data
             EmailAddressModel bcc, 
             EmailAddressModel from, 
             string subject, 
-            object model = null, 
-            string viewName = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null, 
+            string? viewName = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>() { to },
@@ -210,9 +210,9 @@ namespace AspNetCore.MailKitMailer.Data
         protected IMailerContextResult HtmlMail(
             IEnumerable<EmailAddressModel> to, 
             string subject, 
-            object model = null, 
-            string viewName = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null, 
+            string? viewName = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>(to),
@@ -242,9 +242,9 @@ namespace AspNetCore.MailKitMailer.Data
             IEnumerable<EmailAddressModel> to, 
             IEnumerable<EmailAddressModel> cc, 
             string subject, 
-            object model = null, 
-            string viewName = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null, 
+            string? viewName = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>(to),
@@ -277,9 +277,9 @@ namespace AspNetCore.MailKitMailer.Data
             IEnumerable<EmailAddressModel> cc, 
             IEnumerable<EmailAddressModel> bcc, 
             string subject, 
-            object model = null, 
-            string viewName = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null, 
+            string? viewName = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>(to),
@@ -313,9 +313,9 @@ namespace AspNetCore.MailKitMailer.Data
             IEnumerable<EmailAddressModel> bcc, 
             EmailAddressModel from, 
             string subject, 
-            object model = null, 
-            string viewName = null, 
-            Action<IAttachmentCollection> withAttachments = null
+            object? model = null, 
+            string? viewName = null, 
+            Action<IAttachmentCollection>? withAttachments = null
             )
         {
             return this._CreateResult(
@@ -349,8 +349,8 @@ namespace AspNetCore.MailKitMailer.Data
             EmailAddressModel to, 
             string subject,
             string text, 
-            object model = null, 
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null, 
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                to: new List<EmailAddressModel>() { to },
@@ -382,8 +382,8 @@ namespace AspNetCore.MailKitMailer.Data
             EmailAddressModel cc,
             string subject,
             string text,
-            object model = null,
-            Action<IAttachmentCollection> withAttachments = null
+            object? model = null,
+            Action<IAttachmentCollection>? withAttachments = null
             )
         {
             return this._CreateResult(
@@ -417,8 +417,8 @@ namespace AspNetCore.MailKitMailer.Data
             EmailAddressModel bcc, 
             string subject,
             string text,
-            object model = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                to: new List<EmailAddressModel>() { to },
@@ -452,8 +452,8 @@ namespace AspNetCore.MailKitMailer.Data
             EmailAddressModel from, 
             string subject, 
             string text, 
-            object model = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                to: new List<EmailAddressModel>() { to },
@@ -482,8 +482,8 @@ namespace AspNetCore.MailKitMailer.Data
             IEnumerable<EmailAddressModel> to, 
             string subject, 
             string text, 
-            object model = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>(to),
@@ -516,8 +516,8 @@ namespace AspNetCore.MailKitMailer.Data
             IEnumerable<EmailAddressModel> bcc, 
             string subject, 
             string text, 
-            object model = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>(to),
@@ -553,8 +553,8 @@ namespace AspNetCore.MailKitMailer.Data
             EmailAddressModel from, 
             string subject, 
             string text, 
-            object model = null,
-            Action<IAttachmentCollection> withAttachments = null)
+            object? model = null,
+            Action<IAttachmentCollection>? withAttachments = null)
         {
             return this._CreateResult(
                 to: new List<EmailAddressModel>(to),
@@ -588,15 +588,15 @@ namespace AspNetCore.MailKitMailer.Data
         /// <returns></returns>
         private IMailerContextResult _CreateResult(
             IEnumerable<EmailAddressModel> to, 
-            IEnumerable<EmailAddressModel> cc,
-            IEnumerable<EmailAddressModel> bcc,
-            EmailAddressModel from,
+            IEnumerable<EmailAddressModel>? cc,
+            IEnumerable<EmailAddressModel>? bcc,
+            EmailAddressModel? from,
             string subject,
-            string plainBody,
-            string view,
+            string? plainBody,
+            string? view,
             bool isHtml,
-            object model,
-            Action<IAttachmentCollection> withAttachments = null
+            object? model,
+            Action<IAttachmentCollection>? withAttachments = null
             )
         {
             MailerContextResult r = new MailerContextResult();
