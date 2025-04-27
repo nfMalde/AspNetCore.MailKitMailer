@@ -64,14 +64,14 @@ jobs:
         changeinfo: ${{ steps.meta.outputs.changeinfo }}
       steps:
       - name: Checkout Sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name : Get Meta Data
         shell: pwsh
         id: meta
         run: |
-          [xml]$xml = get-content "src/AspNetCore.MailKitMailer.csproj"    
+          [xml]$xml = get-content "src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj"    
           $description = $xml.SelectSingleNode("//Description").InnerText;
           $changes = $xml.SelectSingleNode("//PackageReleaseNotes").InnerText;
           Write-Output "description=$($description.Trim().Replace("`t", '') | ConvertTo-Json)" >> $Env:GITHUB_OUTPUT
@@ -91,8 +91,8 @@ jobs:
           fetch-depth: 0
       - name: Create Package
         run: |
-          dotnet build src/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.version }} -p:PackageVersion=${{ needs.version.outputs.version }}
-          dotnet pack src/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.version }} -p:PackageVersion=${{ needs.version.outputs.version }} --output nget_pkg
+          dotnet build src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.version }} -p:PackageVersion=${{ needs.version.outputs.version }}
+          dotnet pack src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.version }} -p:PackageVersion=${{ needs.version.outputs.version }} --output nget_pkg
       - name: Create Release and Tag
         id: create_release
         uses: actions/create-release@latest
@@ -133,7 +133,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: src/bin/Release/net9.0/AspNetCore.MailKitMailer.dll
+          asset_path: src/AspNetCore.MailKitMailer/bin/Release/net9.0/AspNetCore.MailKitMailer.dll
           asset_name: AspNetCore.MailKitMailer.dll
           asset_content_type: application/octet-stream
       - name: Publish package to nuget
