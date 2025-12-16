@@ -211,7 +211,7 @@ namespace MailKitMailerExample.Mailer
 For explaining: The Method "WelcomeMaiL" will prepare an HtmlMessage (Possible is also plain text Message. Use the helper function "TextMessage" in this case)
 
 Since our method is called "WelcomeMail" and we didnt provide an addtitional view name the mailer will try to render the view "WelcomeMail" in the `~/Mailer-Views/TestMailer/` or `~/Views/Mailer/TestMailer` directory.
-Fallback paths for this  whould bne `~/Views/Mailer/WelcomeMail.cshtml` or `~/Mailer-Views/WelcomeMail.cshtml` (For async: `WelcomeMailAsync` it will look for `WelcomeMailAsync.cshtml`)
+Fallback paths for this  would be `~/Views/Mailer/WelcomeMail.cshtml` or `~/Mailer-Views/WelcomeMail.cshtml` (For async: `WelcomeMailAsync` it will look for `WelcomeMailAsync.cshtml`)
 
 All we need to do now is extracting our class to an Interface that extends `AspNetCore.MailKitMailer.Domain.IMailerContext`
 ```C#
