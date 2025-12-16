@@ -100,6 +100,16 @@ namespace AspNetCore.MailKitMailer.Data
         }
 
         /// <summary>
+        /// Sends the message prepared by given async mailer <typeparam name="TContext"> Mailer Contex
+        /// </summary>
+        /// <typeparam name="TContext">The type of the mailer context.</typeparam>
+        /// <param name="contextBuilder">The async context builder.</param>
+        public void Send<TContext>(Expression<Func<TContext, Task<IMailerContextResult>>> contextBuilder) where TContext : class, IMailerContext
+        {
+            this.SendAsync(contextBuilder).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
         /// Sends the message prepared by given mailer <typeparam name="TContext"> Mailer Contex asynchronous.
         /// </summary>
         /// <typeparam name="TContext">The type of the context.</typeparam>
@@ -135,6 +145,43 @@ namespace AspNetCore.MailKitMailer.Data
             ctx.OnAfterSend(this.serviceProvider);
 
         }
+
+        /// <summary>
+        /// Sends the message prepared by given async mailer <typeparam name="TContext"> Mailer Contex asynchronous.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the context.</typeparam>
+        /// <param name="contextBuilder">The async context builder.</param>
+        /// <returns></returns>
+        public async Task SendAsync<TContext>(Expression<Func<TContext, Task<IMailerContextResult>>> contextBuilder) where TContext : class, IMailerContext
+        {
+            TContext? ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
+
+            if (ctx == null)
+            {
+                throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
+            }
+
+
+            ctx.OnBeforeSend(this.serviceProvider);
+
+            IMailerContextResult result = await this._CompileMailerContextAsync<TContext>(contextBuilder);
+            MimeMessage message = await this.PrepareMessage(this.serviceProvider.GetRequiredService<TContext>(), result);
+
+            this.client.CheckCertificateRevocation = this.smtpConfig.Value?.CheckCertificateRevocation ?? true;
+
+            await this.client.ConnectAsync(this.smtpConfig.Value?.Host, this.smtpConfig?.Value?.Port ?? 25, this.smtpConfig?.Value?.UseSSL ?? false);
+
+            if (this.smtpConfig?.Value?.DoAuthenticate ?? false)
+            {
+                await this.client.AuthenticateAsync(this.smtpConfig.Value.Username, this.smtpConfig.Value.Password);
+            }
+
+            await this.client.SendAsync(message);
+            await this.client.DisconnectAsync(true);
+
+            ctx.OnAfterSend(this.serviceProvider);
+
+        }
         /// <summary>
         /// Asynchronously gets the content of the email based on the provided context.
         /// </summary>
@@ -151,6 +198,27 @@ namespace AspNetCore.MailKitMailer.Data
             }
 
             IMailerContextResult result = this._CompileMailerContext<TContext>(contextBuilder);
+
+           return  await this._RenderView(result, ctx);    
+
+        }
+
+        /// <summary>
+        /// Asynchronously gets the content of the email based on the provided async context.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the mailer context.</typeparam>
+        /// <param name="contextBuilder">The async context builder expression.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the email content as a string.</returns>
+        public async Task<string?> GetContentAsync<TContext>(Expression<Func<TContext, Task<IMailerContextResult>>> contextBuilder) where TContext : class, IMailerContext
+        {
+            TContext? ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
+           
+            if (ctx == null)
+            {
+                throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
+            }
+
+            IMailerContextResult result = await this._CompileMailerContextAsync<TContext>(contextBuilder);
 
            return  await this._RenderView(result, ctx);    
 
@@ -222,7 +290,12 @@ namespace AspNetCore.MailKitMailer.Data
             {
                 foreach(var attachment in result.Attachments)
                 {
-                    if (attachment.FilePath != null)
+                    if (attachment.FileBytes != null) 
+                    {
+                        bodyBuilder.Attachments.Add(attachment.FileName ?? "unknown.file", attachment.FileBytes);
+                    }
+
+                    else if (attachment.FilePath != null)
                     {
                         MimePart? att = null;
 
@@ -237,7 +310,7 @@ namespace AspNetCore.MailKitMailer.Data
                         att.Content = new MimeContent(File.OpenRead(attachment.FilePath), ContentEncoding.Default);
                         att.ContentDisposition = new ContentDisposition(ContentDisposition.Attachment);
                         att.ContentTransferEncoding = ContentEncoding.Base64;
-                        att.FileName = Path.GetFileName(attachment.FilePath);
+                        att.FileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
 
                         bodyBuilder.Attachments.Add(att);
                     }
@@ -280,7 +353,7 @@ namespace AspNetCore.MailKitMailer.Data
                         att.Content = new MimeContent(content, ContentEncoding.Default);
                         att.ContentDisposition = new ContentDisposition(ContentDisposition.Attachment);
                         att.ContentTransferEncoding = ContentEncoding.Base64;
-                        att.FileName = fname;
+                        att.FileName = attachment.FileName ?? fname;
 
                         bodyBuilder.Attachments.Add(att);
                     }
@@ -454,6 +527,50 @@ namespace AspNetCore.MailKitMailer.Data
             // Compile expression
 
             IMailerContextResult r = expression.Compile()(mailerContext);
+
+            if (string.IsNullOrEmpty(r.View) && (string.IsNullOrWhiteSpace(r.TextBody) || r.IsHtml))
+            {
+                r.View = defaultViewName; 
+            } 
+
+
+            return r;
+        }
+
+        /// <summary>
+        /// Compiles the async mailer context expression.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the context.</typeparam>
+        /// <param name="expression">The async expression.</param>
+        /// <returns></returns>
+        /// <exception cref="System.Exception">
+        /// Invalid MailerContext Expression. Expecting call to Method and not static values. E.g. ::SendAsync<IMyMailerContext>(x => x.HelloMailAsync()).
+        /// or
+        /// Unable to load MailerContext {typeof(TContext).FullName}. Service Provider returned null.
+        /// </exception>
+        private async Task<IMailerContextResult> _CompileMailerContextAsync<TContext>(Expression<Func<TContext, Task<IMailerContextResult>>> expression) where TContext : class, IMailerContext
+        {
+            MethodCallExpression? exp = expression.Body as MethodCallExpression;
+
+            if (exp == null)
+            {
+                throw new Exception("Invalid MailerContext Expression. Expecting call to Method and not static values. E.g. ::SendAsync<IMyMailerContext>(x => x.HelloMailAsync()).");
+            } 
+
+            string defaultViewName = exp.Method.Name;
+           
+
+            // Load Mailer Context
+            TContext? mailerContext = this.serviceProvider.GetService(typeof(TContext)) as TContext;
+
+            if (mailerContext == null)
+            {
+                throw new Exception($"Unable to load MailerContext {typeof(TContext).FullName}. Service Provider returned null.");
+            }
+
+            // Compile expression
+
+            IMailerContextResult r = await expression.Compile()(mailerContext);
 
             if (string.IsNullOrEmpty(r.View) && (string.IsNullOrWhiteSpace(r.TextBody) || r.IsHtml))
             {

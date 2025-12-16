@@ -33,15 +33,48 @@ namespace IntegrationTestsWebApp.Controllers
         {
             string myfile = Path.Combine(this.webHost.ContentRootPath, "TestData", "TestFile.txt");
 
-
             this.client.Send<ITestMailer>(x =>
-            x.Test_Attachment(myfile)
-
+                x.Test_Attachment(myfile)
             );
 
+            return Ok();
+        }
+
+        [HttpGet("text-async")]
+        public async Task<IActionResult> TestTextFileAsync()
+        {
+            string myfile = Path.Combine(this.webHost.ContentRootPath, "TestData", "TestFile.txt");
+
+            await this.client.SendAsync<ITestMailer>(x =>
+                x.Test_AttachmentAsync(myfile)
+            );
 
             return Ok();
-        } 
+        }
+
+        [HttpGet("text-bytes")]
+        public IActionResult TestTextFileBytes()
+        {
+            string myfile = Path.Combine(this.webHost.ContentRootPath, "TestData", "TestFile.txt");
+
+            this.client.Send<ITestMailer>(x =>
+                x.Test_AttachmentBytes(myfile)
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("text-bytes-async")]
+        public async Task<IActionResult> TestTextFileBytesAsync()
+        {
+            string myfile = Path.Combine(this.webHost.ContentRootPath, "TestData", "TestFile.txt");
+
+            await this.client.SendAsync<ITestMailer>(x =>
+                x.Test_AttachmentBytesAsync(myfile)
+            );
+
+            return Ok();
+        }
 
         [HttpGet("test-download")]
         public IActionResult TestDownload()
@@ -52,6 +85,20 @@ namespace IntegrationTestsWebApp.Controllers
 
             this.client.Send<ITestMailer>(x =>
                 x.Test_Attachment_Download(downloadUri)
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("test-download-async")]
+        public async Task<IActionResult> TestDownloadAsync()
+        {
+            string testuri = "http://localhost:3333/dl/TestFile.txt";
+           
+            Uri downloadUri = new Uri(testuri);
+
+            await this.client.SendAsync<ITestMailer>(x =>
+                x.Test_Attachment_DownloadAsync(downloadUri)
             );
 
             return Ok();
@@ -71,6 +118,18 @@ namespace IntegrationTestsWebApp.Controllers
             return Ok();
         }
 
+        [HttpGet("test-download2-async")]
+        public async Task<IActionResult> TestDownload2Async()
+        {
+            string testuri = "http://localhost:3333/dl2/NoName";
 
+            Uri downloadUri = new Uri(testuri);
+
+            await this.client.SendAsync<ITestMailer>(x =>
+                x.Test_Attachment_DownloadAsync(downloadUri)
+            );
+
+            return Ok();
+        }
     }
 }

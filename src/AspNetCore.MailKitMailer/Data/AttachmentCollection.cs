@@ -18,15 +18,27 @@ namespace AspNetCore.MailKitMailer.Data
         /// </summary>
         private IList<AttachmentModel> attachments = new List<AttachmentModel>();
 
+        public IAttachmentCollection Add(byte[] fileBytes, string fileName, string contentType)
+        {
+            this.attachments.Add(new AttachmentModel()
+            {
+                FileBytes = fileBytes,
+                FileName = fileName,
+                ContenType = contentType
+            });
+            return this;
+        }
+
         /// <summary>
         /// Adds the specified attachment by file path.
         /// </summary>
         /// <param name="filePath">The file path.</param>
-        public IAttachmentCollection Add(string filePath)
+        public IAttachmentCollection Add(string filePath, string? fileName = null)
         {
             this.attachments.Add(new AttachmentModel()
             {
-                FilePath = filePath
+                FilePath = filePath,
+                FileName = fileName
             });
 
             return this;
@@ -37,12 +49,13 @@ namespace AspNetCore.MailKitMailer.Data
         /// </summary>
         /// <param name="filepath">The filepath.</param>
         /// <param name="contentType">Type of the content.</param>
-        public IAttachmentCollection Add(string filepath, string contentType)
+        public IAttachmentCollection Add(string filepath, string contentType, string? fileName = null)
         {
             this.attachments.Add(new AttachmentModel()
             {
                 ContenType = contentType,
-                FilePath = filepath
+                FilePath = filepath,
+                FileName = fileName
             });
 
             return this;
@@ -52,11 +65,12 @@ namespace AspNetCore.MailKitMailer.Data
         /// Adds the specified attachment by URL.
         /// </summary>
         /// <param name="url">The URL.</param>
-        public IAttachmentCollection Add(Uri url)
+        public IAttachmentCollection Add(Uri url, string? fileName = null)
         {
             this.attachments.Add(new AttachmentModel()
             {
-                FileUrl = url
+                FileUrl = url,
+                FileName = fileName
             });
 
             return this;
@@ -67,12 +81,13 @@ namespace AspNetCore.MailKitMailer.Data
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <param name="contentType">Type of the content.</param>
-        public IAttachmentCollection Add(Uri url, string contentType)
+        public IAttachmentCollection Add(Uri url, string contentType, string? fileName = null)
         {
             this.attachments.Add(new AttachmentModel()
             {
                 ContenType = contentType,
-                FileUrl = url
+                FileUrl = url,
+                FileName = fileName
             });
 
             return this;

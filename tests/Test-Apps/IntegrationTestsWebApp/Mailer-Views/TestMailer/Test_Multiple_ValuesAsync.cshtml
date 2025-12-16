@@ -1,0 +1,40 @@
+@model MultiValueModel
+@{
+}
+
+<p>
+    This is a test mail for Multi Value Parameter usage (Async):
+    <ul>
+        @for (int i = 0; i < Model.Data.To.Count; i++)
+        {
+            <li class="to">
+                <ul>
+                    <li>To.Email=<span class="to_email">@Model.Data.To[i]?.Email</span></li>
+                    <li>To.Name=<span class="to_name">@Model.Data.To[i]?.Name</span></li>
+                </ul>
+            </li>
+
+        }
+
+        @for (int i = 0; i < Model.Data.Cc.Count; i++)
+        {
+            <li class="cc">
+                <ul>
+                    <li>Cc.Email=<span class="cc_email">@Model.Data.Cc[i]?.Email</span></li>
+                    <li>Cc.Name=<span class="cc_name">@Model.Data.Cc[i]?.Name</span></li>
+                </ul>
+            </li>
+        }
+
+        @for (int i = 0; i < Model.Data.Bcc.Count; i++)
+        {
+            <li class="bcc">
+                <ul>
+                    <li>Bcc.Email=<span class="bcc_email">@Model.Data.Bcc[i]?.Email</span></li>
+                    <li>Bcc.Name=<span class="bcc_name">@Model.Data.Bcc[i]?.Name</span></li>
+                </ul>
+            </li>
+        } 
+    </ul>
+
+</p>
