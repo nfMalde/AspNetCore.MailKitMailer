@@ -163,7 +163,7 @@ namespace AspNetCore.MailKitMailerIntegrationTests
         [Fact]
         public async Task TestAttachmentDownloadWithoutFilenameAsync()
         {
-            var dlserver = this.StartDownloadServer();
+            this.StartDownloadServer();
 
             var response = await this.client.GetAsync("/test/attachment/test-download2-async");
 
