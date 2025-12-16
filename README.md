@@ -3,21 +3,11 @@
 [![Paypal Donate](https://img.shields.io/badge/donate-paypal-blue)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
 [![Pull Request Check](https://img.shields.io/github/actions/workflow/status/nfMalde/AspNetCore.MailKitMailer/pr.yml)](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/pr.yml)
 # AspNetCore.MailKitMailer (by Malte)
-This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 6.x
+This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 10.x
 
 
 ## Other Versions
-For best support look at the table below please:
-
-Each minor version has its own support for each .net version.
-Future major releases are only released for the next, current and lts support versions.
-
-.NET Version | Package Version | Branch 
------------- | ------------ | ------------
-.NET Core 3.1 | 1.0.x | [1.0.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.0.x)
-.NET 5 | 1.1.x | [1.1.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.1.x)
-.NET 6 | 1.2.x | [1.2.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/1.2.x)
-.NET 8 | 2.0.x | [2.0.x](https://github.com/nfMalde/AspNetCore.MailKitMailer/tree/2.0.x)
+All other version except 2.1.x are outdated and not maintained anymore. Please upgrade to the latest version if possible.
 
 
 
@@ -203,6 +193,17 @@ namespace MailKitMailerExample.Mailer
 
                 new WelcomeModel() { Username = username, Date = DateTime.Now });
         } 
+
+        public async Task<IMailerContextResult> WelcomeMailAsync(string username, string email)
+        {
+
+            var taskResult  =  await Task.FromResult("MyName");
+            
+            return this.HtmlMail(new EmailAddressModel(taskResult, email),
+                $"Welcome {username}!",
+
+                new WelcomeModel() { Username = username, Date = DateTime.Now });
+        } 
     }
 }
 ```
@@ -210,13 +211,14 @@ namespace MailKitMailerExample.Mailer
 For explaining: The Method "WelcomeMaiL" will prepare an HtmlMessage (Possible is also plain text Message. Use the helper function "TextMessage" in this case)
 
 Since our method is called "WelcomeMail" and we didnt provide an addtitional view name the mailer will try to render the view "WelcomeMail" in the `~/Mailer-Views/TestMailer/` or `~/Views/Mailer/TestMailer` directory.
-Fallback paths for this  whould bne `~/Views/Mailer/WelcomeMail.cshtml` or `~/Mailer-Views/WelcomeMail.cshtml`
+Fallback paths for this  whould bne `~/Views/Mailer/WelcomeMail.cshtml` or `~/Mailer-Views/WelcomeMail.cshtml` (For async: `WelcomeMailAsync` it will look for `WelcomeMailAsync.cshtml`)
 
 All we need to do now is extracting our class to an Interface that extends `AspNetCore.MailKitMailer.Domain.IMailerContext`
 ```C#
 public interface ITestMailer:AspNetCore.MailKitMailer.Domain.IMailerContext
 {
     IMailerContextResult WelcomeMail(string username, string email);
+    Task<IMailerContextResult> WelcomeMailAsync(string username, string email);
 }
 
 public class TestMailer : MailerContextAbstract, ITestMailer
@@ -260,6 +262,17 @@ namespace MailKitMailerExample.Controllers
             string useremail = "john@example.com";
 
             this.client.Send<ITestMailer>(x => x.WelcomeMail(username, useremail));
+            
+            return View();
+        } 
+         
+        [HttpGet("welcome-async")]
+        public async Task<IActionResult> WelcomeAsync()
+        {
+            string username = "John.Doe";
+            string useremail = "john@example.com";
+
+            await this.client.SendAsync<ITestMailer>(x => x.WelcomeMailAsync(username, useremail));
             
             return View();
         } 

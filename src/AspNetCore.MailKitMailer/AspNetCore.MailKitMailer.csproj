@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	  <Nullable>enable</Nullable>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -12,13 +12,17 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Fixed Bug - SMTP connection was not properly disposed after sending an email.
+* Attachments now support byte array and fixed filenames.
+* Updated dependencies to latest versions.
+* General code improvements and optimizations.
+* Added Async Method support for mailer contexts.
+* Updated to .NET 10
 ]]>
 	</PackageReleaseNotes>
     <Description>
 <![CDATA[
 ## What is this?
-A slim and simple client to handle HTML emails in .NET 9+ for MailKit. This client allows you to send emails via MailKit rendered by the Razor view engine, including helpers for CSS inlining and absolute URLs.
+A slim and simple client to handle HTML emails in .NET 10+ for MailKit. This client allows you to send emails via MailKit rendered by the Razor view engine, including helpers for CSS inlining and absolute URLs.
 ]]>
 	</Description>
     <Copyright>2024 Malte Peters</Copyright>
@@ -29,12 +33,12 @@ A slim and simple client to handle HTML emails in .NET 9+ for MailKit. This clie
 
   <ItemGroup>
 	<None Include="..\..\README.MD" Pack="true" PackagePath="\" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.12.1" />
-    <PackageReference Include="MailKit" Version="4.11.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.4" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
+    <PackageReference Include="MailKit" Version="4.14.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
   </ItemGroup>
 
 </Project>
