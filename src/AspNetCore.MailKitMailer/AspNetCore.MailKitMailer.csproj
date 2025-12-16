@@ -12,13 +12,7 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Updated to .NET 9
-* Updated to MailKit 4.11.0
-* Updated to Razor 9.0.4
-* Updated to HtmlAgilityPack 1.12.1
-* Removed Newtonsoft.Json dependency
-* Removed obsolete and unused package RestSharp
-* Improved nullability annotations
+* Fixed Bug - SMTP connection was not properly disposed after sending an email.
 ]]>
 	</PackageReleaseNotes>
     <Description>

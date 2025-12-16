@@ -130,6 +130,7 @@ namespace AspNetCore.MailKitMailer.Data
             }
 
             await this.client.SendAsync(message);
+            await this.client.DisconnectAsync(true);
 
             ctx.OnAfterSend(this.serviceProvider);
 
