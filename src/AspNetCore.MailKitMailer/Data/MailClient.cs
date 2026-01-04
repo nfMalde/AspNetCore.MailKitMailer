@@ -318,9 +318,11 @@ namespace AspNetCore.MailKitMailer.Data
                             var fileName = attachment.FileName ?? fname;
                             
                             // Use stream-based approach to avoid loading entire file into memory
+                            // MimeContent takes ownership of the stream and will dispose it
+                            var fileStream = File.OpenRead(attachment.FilePath);
                             var linkedPart = new MimePart(contentType)
                             {
-                                Content = new MimeContent(File.OpenRead(attachment.FilePath)),
+                                Content = new MimeContent(fileStream),
                                 ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
                                 ContentTransferEncoding = ContentEncoding.Base64,
                                 FileName = fileName,
@@ -336,9 +338,11 @@ namespace AspNetCore.MailKitMailer.Data
                                 var fileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
                                 
                                 // Use stream-based approach to avoid loading entire file into memory
+                                // MimeContent takes ownership of the stream and will dispose it
+                                var fileStream = File.OpenRead(attachment.FilePath);
                                 var attachmentPart = new MimePart(contentType)
                                 {
-                                    Content = new MimeContent(File.OpenRead(attachment.FilePath)),
+                                    Content = new MimeContent(fileStream),
                                     ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
                                     ContentTransferEncoding = ContentEncoding.Base64,
                                     FileName = fileName

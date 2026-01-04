@@ -100,21 +100,57 @@ namespace AspNetCore.MailKitMailerIntegrationTests.Abstracts
                 string n = httpContext.Request.RouteValues["name"].ToString();
                 string ex = httpContext.Request.RouteValues["ext"].ToString();
 
-                // Serve actual test files from TestData directory
                 string fileName = $"{n}.{ex}";
-                string testDataPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Test-Apps", "IntegrationTestsWebApp", "TestData");
-                string filePath = Path.Combine(testDataPath, fileName);
-
-                // If the specific file doesn't exist in TestData, fall back to creating a test file
-                if (!File.Exists(filePath))
+                string filePath;
+                
+                // For image files (linked resources), serve actual test files from TestData directory
+                // For other files, maintain backward compatibility with existing tests
+                bool isImageFile = ex.Equals("png", StringComparison.OrdinalIgnoreCase) || 
+                                   ex.Equals("jpg", StringComparison.OrdinalIgnoreCase) || 
+                                   ex.Equals("jpeg", StringComparison.OrdinalIgnoreCase) ||
+                                   ex.Equals("gif", StringComparison.OrdinalIgnoreCase);
+                
+                if (isImageFile)
                 {
-                    filePath = Path.Combine(Directory.GetCurrentDirectory(), "inttest.txt");
-                    using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    // Try to find TestData directory by searching upward from current directory
+                    string currentDir = Directory.GetCurrentDirectory();
+                    string testDataPath = null;
+                    string searchDir = currentDir;
+                    
+                    // Search up to 5 levels up to find Test-Apps/IntegrationTestsWebApp/TestData
+                    for (int i = 0; i < 5; i++)
                     {
-                        fs.Close();
+                        var candidatePath = Path.Combine(searchDir, "Test-Apps", "IntegrationTestsWebApp", "TestData");
+                        if (Directory.Exists(candidatePath))
+                        {
+                            testDataPath = candidatePath;
+                            break;
+                        }
+                        searchDir = Path.GetDirectoryName(searchDir);
+                        if (string.IsNullOrEmpty(searchDir))
+                            break;
                     }
-                    File.WriteAllText(filePath, "TestDownload");
+                    
+                    // If we found TestData directory and the file exists, use it
+                    if (testDataPath != null)
+                    {
+                        var candidateFile = Path.Combine(testDataPath, fileName);
+                        if (File.Exists(candidateFile))
+                        {
+                            filePath = candidateFile;
+                            await httpContext.Response.SendFileAsync(filePath);
+                            return;
+                        }
+                    }
                 }
+                
+                // Fall back to creating a test file (for backward compatibility with existing tests)
+                filePath = Path.Combine(Directory.GetCurrentDirectory(), "inttest.txt");
+                using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                {
+                    fs.Close();
+                }
+                File.WriteAllText(filePath, "TestDownload");
 
                 await httpContext.Response.SendFileAsync(filePath);
             });
