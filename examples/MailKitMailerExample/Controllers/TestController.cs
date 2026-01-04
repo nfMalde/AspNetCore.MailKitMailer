@@ -1,8 +1,10 @@
 ﻿using AspNetCore.MailKitMailer.Domain;
 using MailKitMailerExample.Mailer;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,10 +14,12 @@ namespace MailKitMailerExample.Controllers
     public class TestController : Controller
     {
         private readonly IMailClient client;
+        private readonly IWebHostEnvironment webHost;
 
-        public TestController(IMailClient client)
+        public TestController(IMailClient client, IWebHostEnvironment webHost)
         {
             this.client = client;
+            this.webHost = webHost;
         }
 
         [HttpGet("welcome")]
@@ -42,6 +46,23 @@ namespace MailKitMailerExample.Controllers
             // for this into our mailing contex: which accepts the users list as parameter
             await this.client.SendAsync<ITestMailer>(x => x.WelcomeMailMultiple(users));
 
+            return View("Welcome");
+        }
+
+        [HttpGet("welcome-with-logo")]
+        public IActionResult WelcomeWithLogo()
+        {
+            // Example: Sending a welcome email with an embedded inline logo image using CID
+            string username = "John.Doe";
+            string useremail = "john@example.com";
+            
+            // Path to your logo image - in a real app this would be in wwwroot or a resources folder
+            string logoPath = Path.Combine(this.webHost.WebRootPath, "images", "logo.png");
+
+            // The logo will be embedded in the email using CID (Content-ID)
+            // In the email template, it's referenced as: <img src="cid:company-logo" />
+            this.client.Send<ITestMailer>(x => x.WelcomeMailWithLogo(username, useremail, logoPath));
+            
             return View("Welcome");
         }
     }

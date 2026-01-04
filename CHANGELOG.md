@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1]
+### Added
+- CID (Content-ID) support for inline/embedded images and resources in HTML emails
+- New `LinkedResources` property on `IMailerContextResult` for embedding images via `cid:` URLs
+- New `AddLinkedResource` methods on `IAttachmentCollection` supporting file paths, byte arrays, and URLs
+- `ContentId` property added to `AttachmentModel`
+
 ## [2.2.0] 
 * Attachments now support byte array and fixed filenames.
 * Updated dependencies to latest versions.

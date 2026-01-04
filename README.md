@@ -3,7 +3,7 @@
 [![Paypal Donate](https://img.shields.io/badge/donate-paypal-blue)](https://www.paypal.com/donate/?hosted_button_id=SVZHLRTQ6H4VL)
 [![Pull Request Check](https://img.shields.io/github/actions/workflow/status/nfMalde/AspNetCore.MailKitMailer/pr.yml)](https://github.com/nfMalde/AspNetCore.MailKitMailer/actions/workflows/pr.yml)
 # AspNetCore.MailKitMailer (by Malte)
-This Mail Client is baded on MailKit to provide HTML-Emails rendered by razor view engine for .NET 10.x
+This Mail Client is based on MailKit to provide HTML-Emails rendered by razor view engine for .NET 10.x, with support for inline/embedded images via CID (Content-ID).
 
 
 ## Other Versions
@@ -361,6 +361,112 @@ You can also download files to add  as attachments. Just provide an type of "`Ur
 Second paramter in our x.Add method is the content type. So you  can override the content type if youn want to.
 
 Extract it to our interface and test it.
+
+#### Inline Images with CID (Content-ID)
+CID (Content-ID) allows you to embed images directly into your HTML emails. Instead of linking to external URLs, images are included as part of the email and referenced using `cid:` URLs. This ensures images display correctly even when the recipient is offline or has external image loading disabled.
+
+##### Creating a Mailer Method with Inline Images
+
+```C#
+using AspNetCore.MailKitMailer.Data;
+using AspNetCore.MailKitMailer.Domain;
+using AspNetCore.MailKitMailer.Models;
+
+namespace MailKitMailerExample.Mailer
+{
+    public class TestMailer : MailerContextAbstract, ITestMailer
+    {
+        /// <summary>
+        /// Sends a welcome email with an embedded company logo
+        /// </summary>
+        public IMailerContextResult WelcomeMailWithLogo(string username, string email, string logoPath)
+        {
+            var result = this.HtmlMail(
+                new EmailAddressModel(username, email),
+                $"Welcome {username}!",
+                new WelcomeModel() { Username = username, Date = DateTime.Now });
+
+            // Add the logo as a linked resource with Content-ID "company-logo"
+            result.LinkedResources = new AttachmentCollection();
+            result.LinkedResources.AddLinkedResource(logoPath, "company-logo");
+
+            return result;
+        }
+
+        /// <summary>
+        /// Sends an email with multiple inline images from different sources
+        /// </summary>
+        public IMailerContextResult NewsletterWithImages(string email, byte[] headerImage, string footerImagePath)
+        {
+            var result = this.HtmlMail(
+                new EmailAddressModel("Subscriber", email),
+                "Monthly Newsletter",
+                new NewsletterModel());
+
+            result.LinkedResources = new AttachmentCollection();
+            
+            // From byte array
+            result.LinkedResources.AddLinkedResource(headerImage, "header.png", "image/png", "header-image");
+            
+            // From file path
+            result.LinkedResources.AddLinkedResource(footerImagePath, "footer-image");
+            
+            // From URL (downloaded at send time)
+            result.LinkedResources.AddLinkedResource(new Uri("https://example.com/logo.png"), "external-logo");
+
+            return result;
+        }
+    }
+}
+```
+
+##### Creating the View with CID References
+
+Create a view file (e.g., `WelcomeMailWithLogo.cshtml`) that references the embedded images using `cid:`:
+
+```html
+@model WelcomeModel
+@{
+}
+
+<div style="text-align: center; padding: 20px;">
+    <!-- Reference the embedded image using cid: followed by the Content-ID -->
+    <img src="cid:company-logo" alt="Company Logo" style="max-width: 200px;" />
+</div>
+
+<h1>Welcome @Model.Username!</h1>
+<p>You joined on @Model.Date.ToLongDateString()</p>
+```
+
+##### Using the Mailer in a Controller
+
+```C#
+[HttpGet("welcome-with-logo")]
+public IActionResult WelcomeWithLogo()
+{
+    string username = "John.Doe";
+    string useremail = "john@example.com";
+    string logoPath = Path.Combine(_webHost.WebRootPath, "images", "logo.png");
+
+    _client.Send<ITestMailer>(x => x.WelcomeMailWithLogo(username, useremail, logoPath));
+    
+    return View("Welcome");
+}
+```
+
+##### AddLinkedResource Method Overloads
+
+The `AddLinkedResource` method supports multiple source types:
+
+| Method Signature | Description |
+|-----------------|-------------|
+| `AddLinkedResource(byte[] fileBytes, string fileName, string contentType, string contentId)` | Add from byte array with explicit content type |
+| `AddLinkedResource(string filePath, string contentId, string? fileName = null)` | Add from file path (content type auto-detected) |
+| `AddLinkedResource(string filePath, string contentType, string contentId, string? fileName = null)` | Add from file path with explicit content type |
+| `AddLinkedResource(Uri url, string contentId, string? fileName = null)` | Add from URL (downloaded at send time) |
+| `AddLinkedResource(Uri url, string contentType, string contentId, string? fileName = null)` | Add from URL with explicit content type |
+
+**Note:** The `contentId` parameter should NOT include the `cid:` prefix. In your HTML, reference it as `src="cid:your-content-id"`.
 
 #### Auto-Registering Contexes
 AspNetCore.MailKitMailer is able to register all mail contexes to services that match an certain criteria:

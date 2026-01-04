@@ -131,5 +131,81 @@ namespace IntegrationTestsWebApp.Controllers
 
             return Ok();
         }
+
+        [HttpGet("linked-resource-file")]
+        public IActionResult TestLinkedResourceFile()
+        {
+            string imagePath = Path.Combine(this.webHost.ContentRootPath, "TestData", "TestImage.png");
+
+            this.client.Send<ITestMailer>(x =>
+                x.Test_LinkedResource_File(imagePath, "testimage")
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("linked-resource-file-async")]
+        public async Task<IActionResult> TestLinkedResourceFileAsync()
+        {
+            string imagePath = Path.Combine(this.webHost.ContentRootPath, "TestData", "TestImage.png");
+
+            await this.client.SendAsync<ITestMailer>(x =>
+                x.Test_LinkedResource_FileAsync(imagePath, "testimage")
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("linked-resource-bytes")]
+        public IActionResult TestLinkedResourceBytes()
+        {
+            string imagePath = Path.Combine(this.webHost.ContentRootPath, "TestData", "TestImage.png");
+            byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
+
+            this.client.Send<ITestMailer>(x =>
+                x.Test_LinkedResource_Bytes(imageBytes, "TestImage.png", "image/png", "testimage")
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("linked-resource-bytes-async")]
+        public async Task<IActionResult> TestLinkedResourceBytesAsync()
+        {
+            string imagePath = Path.Combine(this.webHost.ContentRootPath, "TestData", "TestImage.png");
+            byte[] imageBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
+
+            await this.client.SendAsync<ITestMailer>(x =>
+                x.Test_LinkedResource_BytesAsync(imageBytes, "TestImage.png", "image/png", "testimage")
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("linked-resource-url")]
+        public IActionResult TestLinkedResourceUrl()
+        {
+            string testuri = "http://localhost:3333/dl/TestImage.png";
+            Uri downloadUri = new Uri(testuri);
+
+            this.client.Send<ITestMailer>(x =>
+                x.Test_LinkedResource_Url(downloadUri, "testimage")
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("linked-resource-url-async")]
+        public async Task<IActionResult> TestLinkedResourceUrlAsync()
+        {
+            string testuri = "http://localhost:3333/dl/TestImage.png";
+            Uri downloadUri = new Uri(testuri);
+
+            await this.client.SendAsync<ITestMailer>(x =>
+                x.Test_LinkedResource_UrlAsync(downloadUri, "testimage")
+            );
+
+            return Ok();
+        }
     }
 }

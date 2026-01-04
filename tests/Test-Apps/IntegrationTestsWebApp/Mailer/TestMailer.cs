@@ -25,6 +25,15 @@ namespace IntegrationTestsWebApp.Mailer
 
         IMailerContextResult Test_AttachmentBytes(string attachmentPath);
         Task<IMailerContextResult> Test_AttachmentBytesAsync(string attachmentPath);
+
+        IMailerContextResult Test_LinkedResource_File(string imagePath, string contentId);
+        Task<IMailerContextResult> Test_LinkedResource_FileAsync(string imagePath, string contentId);
+
+        IMailerContextResult Test_LinkedResource_Bytes(byte[] imageBytes, string fileName, string contentType, string contentId);
+        Task<IMailerContextResult> Test_LinkedResource_BytesAsync(byte[] imageBytes, string fileName, string contentType, string contentId);
+
+        IMailerContextResult Test_LinkedResource_Url(Uri imageUrl, string contentId);
+        Task<IMailerContextResult> Test_LinkedResource_UrlAsync(Uri imageUrl, string contentId);
     }
 
 
@@ -156,6 +165,87 @@ namespace IntegrationTestsWebApp.Mailer
                 new MultiValueModel() { 
                     Data = payload
                 });
+        }
+
+        public IMailerContextResult Test_LinkedResource_File(string imagePath, string contentId)
+        {
+            var result = HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-LinkedResource File",
+                null);
+
+            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
+            result.LinkedResources.AddLinkedResource(imagePath, contentId);
+
+            return result;
+        }
+
+        public async Task<IMailerContextResult> Test_LinkedResource_FileAsync(string imagePath, string contentId)
+        {
+            await Task.Delay(1);
+            var result = HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-LinkedResource File",
+                null);
+
+            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
+            result.LinkedResources.AddLinkedResource(imagePath, contentId);
+
+            return result;
+        }
+
+        public IMailerContextResult Test_LinkedResource_Bytes(byte[] imageBytes, string fileName, string contentType, string contentId)
+        {
+            var result = HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-LinkedResource Bytes",
+                null);
+
+            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
+            result.LinkedResources.AddLinkedResource(imageBytes, fileName, contentType, contentId);
+
+            return result;
+        }
+
+        public async Task<IMailerContextResult> Test_LinkedResource_BytesAsync(byte[] imageBytes, string fileName, string contentType, string contentId)
+        {
+            await Task.Delay(1);
+            var result = HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-LinkedResource Bytes",
+                null);
+
+            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
+            result.LinkedResources.AddLinkedResource(imageBytes, fileName, contentType, contentId);
+
+            return result;
+        }
+
+        public IMailerContextResult Test_LinkedResource_Url(Uri imageUrl, string contentId)
+        {
+            var result = HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-LinkedResource Url",
+                null);
+
+            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
+            result.LinkedResources.AddLinkedResource(imageUrl, contentId);
+
+            return result;
+        }
+
+        public async Task<IMailerContextResult> Test_LinkedResource_UrlAsync(Uri imageUrl, string contentId)
+        {
+            await Task.Delay(1);
+            var result = HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-LinkedResource Url",
+                null);
+
+            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
+            result.LinkedResources.AddLinkedResource(imageUrl, contentId);
+
+            return result;
         }
     }
 }

@@ -360,11 +360,97 @@ namespace AspNetCore.MailKitMailer.Data
                 }
             }
 
+            // Linked Resources (inline attachments with CID)
+            if (result.LinkedResources != null && !result.LinkedResources.IsEmpty())
+            {
+                foreach (var linkedResource in result.LinkedResources)
+                {
+                    if (linkedResource.FileBytes != null)
+                    {
+                        MimePart linkedPart = this._CreateLinkedResourcePart(
+                            linkedResource.ContenType ?? "application/octet-stream",
+                            new MemoryStream(linkedResource.FileBytes),
+                            linkedResource.FileName ?? "resource",
+                            linkedResource.ContentId ?? Guid.NewGuid().ToString());
+
+                        bodyBuilder.LinkedResources.Add(linkedPart);
+                    }
+                    else if (linkedResource.FilePath != null)
+                    {
+                        string contentType = linkedResource.ContenType ?? MimeKit.MimeTypes.GetMimeType(linkedResource.FilePath);
+                        string fileName = linkedResource.FileName ?? Path.GetFileName(linkedResource.FilePath);
+                        string contentId = linkedResource.ContentId ?? Guid.NewGuid().ToString();
+
+                        MimePart linkedPart = this._CreateLinkedResourcePart(
+                            contentType,
+                            File.OpenRead(linkedResource.FilePath),
+                            fileName,
+                            contentId);
+
+                        bodyBuilder.LinkedResources.Add(linkedPart);
+                    }
+                    else if (linkedResource.FileUrl != null)
+                    {
+                        var data = await this.httpClient.GetByteArrayAsync(linkedResource.FileUrl);
+                        var content = new MemoryStream(data);
+                        string fname = linkedResource.FileName ?? Path.GetFileName(linkedResource.FileUrl.ToString());
+
+                        if (!Path.HasExtension(fname))
+                        {
+                            var rr = await this.httpClient.GetAsync(linkedResource.FileUrl);
+                            var headers = rr.Content.Headers;
+
+                            if (headers != null && headers.ContentDisposition != null)
+                            {
+                                string? cdname = headers.ContentDisposition.FileName;
+                                if (!string.IsNullOrEmpty(cdname))
+                                {
+                                    fname = cdname;
+                                }
+                            }
+                        }
+
+                        string contentType = linkedResource.ContenType ?? MimeKit.MimeTypes.GetMimeType(fname);
+                        string contentId = linkedResource.ContentId ?? Guid.NewGuid().ToString();
+
+                        MimePart linkedPart = this._CreateLinkedResourcePart(
+                            contentType,
+                            content,
+                            fname,
+                            contentId);
+
+                        bodyBuilder.LinkedResources.Add(linkedPart);
+                    }
+                }
+            }
+
 
             message.Body = bodyBuilder.ToMessageBody();
 
 
             return message;
+        }
+
+        /// <summary>
+        /// Creates a MimePart configured as a linked resource (inline attachment) with Content-ID.
+        /// </summary>
+        /// <param name="contentType">The MIME content type.</param>
+        /// <param name="contentStream">The content stream.</param>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="contentId">The Content-ID for CID reference.</param>
+        /// <returns>A configured MimePart for use as a linked resource.</returns>
+        private MimePart _CreateLinkedResourcePart(string contentType, Stream contentStream, string fileName, string contentId)
+        {
+            var linkedPart = new MimePart(contentType)
+            {
+                Content = new MimeContent(contentStream, ContentEncoding.Default),
+                ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
+                ContentTransferEncoding = ContentEncoding.Base64,
+                FileName = fileName,
+                ContentId = contentId
+            };
+
+            return linkedPart;
         }
 
         /// <summary>
