@@ -320,15 +320,24 @@ namespace AspNetCore.MailKitMailer.Data
                             // Use stream-based approach to avoid loading entire file into memory
                             // MimeContent takes ownership of the stream and will dispose it
                             var fileStream = File.OpenRead(attachment.FilePath);
-                            var linkedPart = new MimePart(contentType)
+                            try
                             {
-                                Content = new MimeContent(fileStream),
-                                ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
-                                ContentTransferEncoding = ContentEncoding.Base64,
-                                FileName = fileName,
-                                ContentId = attachment.ContentId ?? Guid.NewGuid().ToString()
-                            };
-                            bodyBuilder.LinkedResources.Add(linkedPart);
+                                var linkedPart = new MimePart(contentType)
+                                {
+                                    Content = new MimeContent(fileStream),
+                                    ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
+                                    ContentTransferEncoding = ContentEncoding.Base64,
+                                    FileName = fileName,
+                                    ContentId = attachment.ContentId ?? Guid.NewGuid().ToString()
+                                };
+                                bodyBuilder.LinkedResources.Add(linkedPart);
+                            }
+                            catch
+                            {
+                                // If an error occurs, ensure the stream is disposed
+                                fileStream?.Dispose();
+                                throw;
+                            }
                         }
                         else
                         {
@@ -340,14 +349,23 @@ namespace AspNetCore.MailKitMailer.Data
                                 // Use stream-based approach to avoid loading entire file into memory
                                 // MimeContent takes ownership of the stream and will dispose it
                                 var fileStream = File.OpenRead(attachment.FilePath);
-                                var attachmentPart = new MimePart(contentType)
+                                try
                                 {
-                                    Content = new MimeContent(fileStream),
-                                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
-                                    ContentTransferEncoding = ContentEncoding.Base64,
-                                    FileName = fileName
-                                };
-                                bodyBuilder.Attachments.Add(attachmentPart);
+                                    var attachmentPart = new MimePart(contentType)
+                                    {
+                                        Content = new MimeContent(fileStream),
+                                        ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                                        ContentTransferEncoding = ContentEncoding.Base64,
+                                        FileName = fileName
+                                    };
+                                    bodyBuilder.Attachments.Add(attachmentPart);
+                                }
+                                catch
+                                {
+                                    // If an error occurs, ensure the stream is disposed
+                                    fileStream?.Dispose();
+                                    throw;
+                                }
                             }
                             else
                             {
