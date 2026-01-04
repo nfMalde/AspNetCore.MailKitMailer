@@ -320,11 +320,21 @@ namespace AspNetCore.MailKitMailer.Data
                         }
                         else
                         {
-                            bodyBuilder.Attachments.Add(attachment.FilePath);
-                            if (attachment.FileName != null)
+                            if (!string.IsNullOrEmpty(attachment.ContenType))
                             {
-                                var att = bodyBuilder.Attachments[bodyBuilder.Attachments.Count - 1];
-                                att.ContentDisposition!.FileName = attachment.FileName;
+                                var contentType = ContentType.Parse(attachment.ContenType);
+                                var fileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
+                                var data = await File.ReadAllBytesAsync(attachment.FilePath);
+                                bodyBuilder.Attachments.Add(fileName, data, contentType);
+                            }
+                            else
+                            {
+                                bodyBuilder.Attachments.Add(attachment.FilePath);
+                                if (attachment.FileName != null)
+                                {
+                                    var att = bodyBuilder.Attachments[bodyBuilder.Attachments.Count - 1];
+                                    att.ContentDisposition!.FileName = attachment.FileName;
+                                }
                             }
                         }
                     }
