@@ -56,7 +56,8 @@ namespace MailKitMailerExample.Controllers
             string username = "John.Doe";
             string useremail = "john@example.com";
             
-            // Path to your logo image - in a real app this would be in wwwroot or a resources folder
+            // Placeholder path to a logo image. This assumes a file at wwwroot/images/logo.png;
+            // add that file to your project or change the path below to point to an existing image.
             string logoPath = Path.Combine(this.webHost.WebRootPath, "images", "logo.png");
 
             // The logo will be embedded in the email using CID (Content-ID)
