@@ -98,10 +98,10 @@ namespace AspNetCore.MailKitMailer.Data
         /// Reference in HTML using: &lt;img src="cid:{contentId}" /&gt;
         /// </summary>
         /// <param name="fileBytes">The file content as byte array.</param>
-        /// <param name="fileName">The file name.</param>
         /// <param name="contentType">The MIME content type.</param>
         /// <param name="contentId">The Content-ID to reference in HTML (without 'cid:' prefix).</param>
-        public IAttachmentCollection AddLinkedResource(byte[] fileBytes, string fileName, string contentType, string contentId)
+        /// <param name="fileName">Optional file name override.</param>
+        public IAttachmentCollection AddLinkedResource(byte[] fileBytes, string contentType, string contentId, string? fileName = null)
         {
             this.attachments.Add(new AttachmentModel()
             {
