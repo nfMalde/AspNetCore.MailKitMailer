@@ -129,7 +129,7 @@ namespace AspNetCore.MailKitMailerIntegrationTests.Abstracts
                             break;
                         }
                         searchDir = Path.GetDirectoryName(searchDir);
-                        if (string.IsNullOrEmpty(searchDir))
+                        if (searchDir == null)
                             break;
                     }
                     
@@ -148,10 +148,6 @@ namespace AspNetCore.MailKitMailerIntegrationTests.Abstracts
                 
                 // Fall back to creating a test file (for backward compatibility with existing tests)
                 filePath = Path.Combine(Directory.GetCurrentDirectory(), "inttest.txt");
-                using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
-                {
-                    fs.Close();
-                }
                 File.WriteAllText(filePath, "TestDownload");
 
                 await httpContext.Response.SendFileAsync(filePath);
