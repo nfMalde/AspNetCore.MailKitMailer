@@ -316,10 +316,17 @@ namespace AspNetCore.MailKitMailer.Data
                                 ? ContentType.Parse(attachment.ContenType)
                                 : ContentType.Parse(MimeKit.MimeTypes.GetMimeType(fname));
                             var fileName = attachment.FileName ?? fname;
-                            var data = await File.ReadAllBytesAsync(attachment.FilePath);
                             
-                            var linkedResource = bodyBuilder.LinkedResources.Add(fileName, data, contentType);
-                            linkedResource.ContentId = attachment.ContentId;
+                            // Use stream-based approach to avoid loading entire file into memory
+                            var linkedPart = new MimePart(contentType)
+                            {
+                                Content = new MimeContent(File.OpenRead(attachment.FilePath)),
+                                ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
+                                ContentTransferEncoding = ContentEncoding.Base64,
+                                FileName = fileName,
+                                ContentId = attachment.ContentId ?? Guid.NewGuid().ToString()
+                            };
+                            bodyBuilder.LinkedResources.Add(linkedPart);
                         }
                         else
                         {
@@ -327,8 +334,16 @@ namespace AspNetCore.MailKitMailer.Data
                             {
                                 var contentType = ContentType.Parse(attachment.ContenType);
                                 var fileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
-                                var data = await File.ReadAllBytesAsync(attachment.FilePath);
-                                bodyBuilder.Attachments.Add(fileName, data, contentType);
+                                
+                                // Use stream-based approach to avoid loading entire file into memory
+                                var attachmentPart = new MimePart(contentType)
+                                {
+                                    Content = new MimeContent(File.OpenRead(attachment.FilePath)),
+                                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                                    ContentTransferEncoding = ContentEncoding.Base64,
+                                    FileName = fileName
+                                };
+                                bodyBuilder.Attachments.Add(attachmentPart);
                             }
                             else
                             {

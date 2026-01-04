@@ -100,15 +100,21 @@ namespace AspNetCore.MailKitMailerIntegrationTests.Abstracts
                 string n = httpContext.Request.RouteValues["name"].ToString();
                 string ex = httpContext.Request.RouteValues["ext"].ToString();
 
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "inttest.txt");
+                // Serve actual test files from TestData directory
+                string fileName = $"{n}.{ex}";
+                string testDataPath = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Test-Apps", "IntegrationTestsWebApp", "TestData");
+                string filePath = Path.Combine(testDataPath, fileName);
 
-                using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                // If the specific file doesn't exist in TestData, fall back to creating a test file
+                if (!File.Exists(filePath))
                 {
-
-                    fs.Close();
+                    filePath = Path.Combine(Directory.GetCurrentDirectory(), "inttest.txt");
+                    using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite))
+                    {
+                        fs.Close();
+                    }
+                    File.WriteAllText(filePath, "TestDownload");
                 }
-
-                File.WriteAllText(filePath, "TestDownload");
 
                 await httpContext.Response.SendFileAsync(filePath);
             });
