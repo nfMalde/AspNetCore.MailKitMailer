@@ -1,17 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
 using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Shouldly;
+using Xunit;
 
 namespace AspNetCore.MailKitMailerIntegrationTests
 {
     /// <summary>
     /// Integration tests for CID (Content-ID) linked resources support.
-    /// Note: These tests verify that emails with linked resources are sent successfully.
-    /// The actual MIME structure verification is limited due to netDumbster's parsing capabilities.
+    /// Note: These tests verify that emails with linked resources are sent successfully
+    /// by checking the raw MIME data, as netDumbster's MessageParts parser doesn't 
+    /// correctly handle nested multipart structures (multipart/related inside multipart/alternative).
     /// </summary>
     public class LinkedResourceTests : Abstracts.MailTestAbstracts
     {
@@ -23,9 +22,27 @@ namespace AspNetCore.MailKitMailerIntegrationTests
         public async Task TestLinkedResourceFile()
         {
             var response = await this.client.GetAsync("/test/attachment/linked-resource-file");
+            
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            this.mailServer.ReceivedEmailCount.ShouldBeGreaterThan(0, "Expected at least one email to be received");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.True(this.mailServer.ReceivedEmailCount > 0, "Expected at least one email to be received");
+            var email = this.mailServer.ReceivedEmail.FirstOrDefault();
+            email.ShouldNotBeNull();
+            
+            // Check raw email data for proper MIME structure
+            var rawData = email.Data;
+            
+            // Verify the Content-ID header is present with our custom ID
+            rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
+                "Expected raw email to contain Content-Id header with 'testimage'");
+            
+            // Verify the HTML body references the CID
+            rawData.ShouldContain("cid:testimage", customMessage: 
+                "Expected HTML body to contain CID reference");
+            
+            // Verify multipart/related structure is present
+            rawData.ShouldContain("multipart/related", customMessage: 
+                "Expected email to have multipart/related structure for linked resources");
         }
 
         [Fact]
@@ -33,8 +50,22 @@ namespace AspNetCore.MailKitMailerIntegrationTests
         {
             var response = await this.client.GetAsync("/test/attachment/linked-resource-file-async");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.True(this.mailServer.ReceivedEmailCount > 0, "Expected at least one email to be received");
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            this.mailServer.ReceivedEmailCount.ShouldBeGreaterThan(0, "Expected at least one email to be received");
+
+            var email = this.mailServer.ReceivedEmail.FirstOrDefault();
+            email.ShouldNotBeNull();
+            
+            // Check raw email data for proper MIME structure
+            var rawData = email.Data;
+            
+            // Verify the Content-ID header is present with our custom ID
+            rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
+                "Expected raw email to contain Content-Id header with 'testimage'");
+            
+            // Verify multipart/related structure is present
+            rawData.ShouldContain("multipart/related", customMessage: 
+                "Expected email to have multipart/related structure for linked resources");
         }
 
         [Fact]
@@ -42,8 +73,22 @@ namespace AspNetCore.MailKitMailerIntegrationTests
         {
             var response = await this.client.GetAsync("/test/attachment/linked-resource-bytes");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.True(this.mailServer.ReceivedEmailCount > 0, "Expected at least one email to be received");
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            this.mailServer.ReceivedEmailCount.ShouldBeGreaterThan(0, "Expected at least one email to be received");
+
+            var email = this.mailServer.ReceivedEmail.FirstOrDefault();
+            email.ShouldNotBeNull();
+            
+            // Check raw email data for proper MIME structure
+            var rawData = email.Data;
+            
+            // Verify the Content-ID header is present with our custom ID
+            rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
+                "Expected raw email to contain Content-Id header with 'testimage'");
+            
+            // Verify multipart/related structure is present
+            rawData.ShouldContain("multipart/related", customMessage: 
+                "Expected email to have multipart/related structure for linked resources");
         }
 
         [Fact]
@@ -51,8 +96,22 @@ namespace AspNetCore.MailKitMailerIntegrationTests
         {
             var response = await this.client.GetAsync("/test/attachment/linked-resource-bytes-async");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.True(this.mailServer.ReceivedEmailCount > 0, "Expected at least one email to be received");
+            response.StatusCode.ShouldBe(HttpStatusCode.OK);
+            this.mailServer.ReceivedEmailCount.ShouldBeGreaterThan(0, "Expected at least one email to be received");
+
+            var email = this.mailServer.ReceivedEmail.FirstOrDefault();
+            email.ShouldNotBeNull();
+            
+            // Check raw email data for proper MIME structure
+            var rawData = email.Data;
+            
+            // Verify the Content-ID header is present with our custom ID
+            rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
+                "Expected raw email to contain Content-Id header with 'testimage'");
+            
+            // Verify multipart/related structure is present
+            rawData.ShouldContain("multipart/related", customMessage: 
+                "Expected email to have multipart/related structure for linked resources");
         }
     }
 
@@ -76,8 +135,22 @@ namespace AspNetCore.MailKitMailerIntegrationTests
             {
                 var response = await this.client.GetAsync("/test/attachment/linked-resource-url");
 
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.True(this.mailServer.ReceivedEmailCount > 0, "Expected at least one email to be received");
+                response.StatusCode.ShouldBe(HttpStatusCode.OK);
+                this.mailServer.ReceivedEmailCount.ShouldBeGreaterThan(0, "Expected at least one email to be received");
+
+                var email = this.mailServer.ReceivedEmail.FirstOrDefault();
+                email.ShouldNotBeNull();
+                
+                // Check raw email data for proper MIME structure
+                var rawData = email.Data;
+                
+                // Verify the Content-ID header is present with our custom ID
+                rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
+                    "Expected raw email to contain Content-Id header with 'testimage'");
+                
+                // Verify multipart/related structure is present
+                rawData.ShouldContain("multipart/related", customMessage: 
+                    "Expected email to have multipart/related structure for linked resources");
             }
             finally
             {
@@ -94,8 +167,22 @@ namespace AspNetCore.MailKitMailerIntegrationTests
             {
                 var response = await this.client.GetAsync("/test/attachment/linked-resource-url-async");
 
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.True(this.mailServer.ReceivedEmailCount > 0, "Expected at least one email to be received");
+                response.StatusCode.ShouldBe(HttpStatusCode.OK);
+                this.mailServer.ReceivedEmailCount.ShouldBeGreaterThan(0, "Expected at least one email to be received");
+
+                var email = this.mailServer.ReceivedEmail.FirstOrDefault();
+                email.ShouldNotBeNull();
+                
+                // Check raw email data for proper MIME structure
+                var rawData = email.Data;
+                
+                // Verify the Content-ID header is present with our custom ID
+                rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
+                    "Expected raw email to contain Content-Id header with 'testimage'");
+                
+                // Verify multipart/related structure is present
+                rawData.ShouldContain("multipart/related", customMessage: 
+                    "Expected email to have multipart/related structure for linked resources");
             }
             finally
             {

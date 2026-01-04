@@ -88,14 +88,5 @@ namespace AspNetCore.MailKitMailer.Domain
         /// The attachments.
         /// </value>
         IAttachmentCollection? Attachments { get; set; }
-
-        /// <summary>
-        /// Gets or sets the linked resources (inline attachments) for CID references in HTML.
-        /// These are embedded images/resources referenced via cid: URLs in the HTML body.
-        /// </summary>
-        /// <value>
-        /// The linked resources collection.
-        /// </value>
-        IAttachmentCollection? LinkedResources { get; set; }
     }
 }

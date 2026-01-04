@@ -172,10 +172,8 @@ namespace IntegrationTestsWebApp.Mailer
             var result = HtmlMail(
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource File",
-                null);
-
-            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
-            result.LinkedResources.AddLinkedResource(imagePath, contentId);
+                null, withAttachments: a => a.AddLinkedResource(imagePath, contentId));
+             
 
             return result;
         }
@@ -183,69 +181,49 @@ namespace IntegrationTestsWebApp.Mailer
         public async Task<IMailerContextResult> Test_LinkedResource_FileAsync(string imagePath, string contentId)
         {
             await Task.Delay(1);
-            var result = HtmlMail(
+            return HtmlMail(
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource File",
-                null);
-
-            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
-            result.LinkedResources.AddLinkedResource(imagePath, contentId);
-
-            return result;
+                null,
+                withAttachments: a => a.AddLinkedResource(imagePath, contentId));
         }
 
         public IMailerContextResult Test_LinkedResource_Bytes(byte[] imageBytes, string fileName, string contentType, string contentId)
         {
-            var result = HtmlMail(
+            return HtmlMail(
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource Bytes",
-                null);
-
-            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
-            result.LinkedResources.AddLinkedResource(imageBytes, fileName, contentType, contentId);
-
-            return result;
+                null,
+                withAttachments: a => a.AddLinkedResource(imageBytes, fileName, contentType, contentId));
         }
 
         public async Task<IMailerContextResult> Test_LinkedResource_BytesAsync(byte[] imageBytes, string fileName, string contentType, string contentId)
         {
             await Task.Delay(1);
-            var result = HtmlMail(
+            return HtmlMail(
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource Bytes",
-                null);
-
-            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
-            result.LinkedResources.AddLinkedResource(imageBytes, fileName, contentType, contentId);
-
-            return result;
+                null,
+                withAttachments: a => a.AddLinkedResource(imageBytes, fileName, contentType, contentId));
         }
 
         public IMailerContextResult Test_LinkedResource_Url(Uri imageUrl, string contentId)
         {
-            var result = HtmlMail(
+            return HtmlMail(
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource Url",
-                null);
-
-            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
-            result.LinkedResources.AddLinkedResource(imageUrl, contentId);
-
-            return result;
+                null,
+                withAttachments: a => a.AddLinkedResource(imageUrl, contentId));
         }
 
         public async Task<IMailerContextResult> Test_LinkedResource_UrlAsync(Uri imageUrl, string contentId)
         {
             await Task.Delay(1);
-            var result = HtmlMail(
+            return HtmlMail(
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource Url",
-                null);
-
-            result.LinkedResources = new AspNetCore.MailKitMailer.Data.AttachmentCollection();
-            result.LinkedResources.AddLinkedResource(imageUrl, contentId);
-
-            return result;
+                null,
+                withAttachments: a => a.AddLinkedResource(imageUrl, contentId));
         }
     }
 }

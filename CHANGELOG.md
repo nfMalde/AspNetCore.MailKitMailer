@@ -7,9 +7,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [2.2.1]
 ### Added
 - CID (Content-ID) support for inline/embedded images and resources in HTML emails
-- New `LinkedResources` property on `IMailerContextResult` for embedding images via `cid:` URLs
-- New `AddLinkedResource` methods on `IAttachmentCollection` supporting file paths, byte arrays, and URLs
-- `ContentId` property added to `AttachmentModel`
+
+#### How to Use Inline Images with CID
+
+**1. Add a linked resource in your mailer method:**
+```csharp
+public IMailerContextResult WelcomeMailWithLogo(string email, string logoPath)
+{
+    return this.HtmlMail(
+        new EmailAddressModel("User", email),
+        "Welcome!",
+        new WelcomeModel(),
+        withAttachments: a => a.AddLinkedResource(logoPath, "company-logo"));
+}
+```
+
+**2. Reference the image in your Razor view using `cid:`:**
+```html
+<img src="cid:company-logo" alt="Logo" />
+```
+
+The `AddLinkedResource` method supports file paths, byte arrays, and URLs. See the README for full documentation.
 
 ## [2.2.0] 
 * Attachments now support byte array and fixed filenames.

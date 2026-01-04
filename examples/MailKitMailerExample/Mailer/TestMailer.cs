@@ -49,17 +49,13 @@ namespace MailKitMailerExample.Mailer
         /// <param name="logoPath">Path to the logo image file</param>
         public IMailerContextResult WelcomeMailWithLogo(string username, string email, string logoPath)
         {
-            var result = this.HtmlMail(
-                new EmailAddressModel(username, email),
-                $"Welcome {username}!",
-                new WelcomeModel() { Username = username, Date = DateTime.Now });
-
             // Add the logo as a linked resource with Content-ID "company-logo"
             // This can be referenced in the view using: <img src="cid:company-logo" />
-            result.LinkedResources = new AttachmentCollection();
-            result.LinkedResources.AddLinkedResource(logoPath, "company-logo");
-
-            return result;
+            return this.HtmlMail(
+                new EmailAddressModel(username, email),
+                $"Welcome {username}!",
+                new WelcomeModel() { Username = username, Date = DateTime.Now },
+                withAttachments: a => a.AddLinkedResource(logoPath, "company-logo"));
         }
     }
 }

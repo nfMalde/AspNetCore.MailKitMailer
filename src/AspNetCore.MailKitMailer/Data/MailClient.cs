@@ -285,40 +285,54 @@ namespace AspNetCore.MailKitMailer.Data
             bodyBuilder.TextBody = textBody;
            
     
-            // Attachments
+            // Attachments and LinkedResources
             if (result.Attachments != null && !result.Attachments.IsEmpty())
             {
-                foreach(var attachment in result.Attachments)
+                foreach (var attachment in result.Attachments)
                 {
-                    if (attachment.FileBytes != null) 
-                    {
-                        bodyBuilder.Attachments.Add(attachment.FileName ?? "unknown.file", attachment.FileBytes);
-                    }
+                    bool isLinkedResource = !string.IsNullOrEmpty(attachment.ContentId);
 
+                    if (attachment.FileBytes != null)
+                    {
+                        var contentType = ContentType.Parse(attachment.ContenType ?? "application/octet-stream");
+                        var fileName = attachment.FileName ?? "unknown.file";
+                        
+                        if (isLinkedResource)
+                        {
+                            var linkedResource = bodyBuilder.LinkedResources.Add(fileName, attachment.FileBytes, contentType);
+                            linkedResource.ContentId = attachment.ContentId;
+                        }
+                        else
+                        {
+                            bodyBuilder.Attachments.Add(fileName, attachment.FileBytes, contentType);
+                        }
+                    }
                     else if (attachment.FilePath != null)
                     {
-                        MimePart? att = null;
-
-                        if (attachment.ContenType != null)
+                        var fileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
+                        
+                        if (isLinkedResource)
                         {
-                            att = new MimePart(attachment.ContenType);
-                        } else
-                        {
-                            att = new MimePart(MimeKit.MimeTypes.GetMimeType(attachment.FilePath));
+                            var linkedResource = bodyBuilder.LinkedResources.Add(attachment.FilePath);
+                            linkedResource.ContentId = attachment.ContentId;
+                            if (attachment.FileName != null)
+                            {
+                                linkedResource.ContentDisposition!.FileName = attachment.FileName;
+                            }
                         }
-
-                        att.Content = new MimeContent(File.OpenRead(attachment.FilePath), ContentEncoding.Default);
-                        att.ContentDisposition = new ContentDisposition(ContentDisposition.Attachment);
-                        att.ContentTransferEncoding = ContentEncoding.Base64;
-                        att.FileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
-
-                        bodyBuilder.Attachments.Add(att);
+                        else
+                        {
+                            bodyBuilder.Attachments.Add(attachment.FilePath);
+                            if (attachment.FileName != null)
+                            {
+                                var att = bodyBuilder.Attachments[bodyBuilder.Attachments.Count - 1];
+                                att.ContentDisposition!.FileName = attachment.FileName;
+                            }
+                        }
                     }
                     else if (attachment.FileUrl != null)
                     {
-                        
                         var data = await this.httpClient.GetByteArrayAsync(attachment.FileUrl);
-                        var content = new System.IO.MemoryStream(data);
                         string fname = Path.GetFileName(attachment.FileUrl.ToString());
 
                         if (!Path.HasExtension(fname))
@@ -336,121 +350,30 @@ namespace AspNetCore.MailKitMailer.Data
                                     fname = cdname;
                                 }
                             }
-
                         }
 
-                        MimePart? att = null;
+                        var contentType = attachment.ContenType != null 
+                            ? ContentType.Parse(attachment.ContenType)
+                            : ContentType.Parse(MimeKit.MimeTypes.GetMimeType(fname));
+                        var fileName = attachment.FileName ?? fname;
 
-                        if (attachment.ContenType != null)
+                        if (isLinkedResource)
                         {
-                            att = new MimePart(attachment.ContenType);
+                            var linkedResource = bodyBuilder.LinkedResources.Add(fileName, data, contentType);
+                            linkedResource.ContentId = attachment.ContentId;
                         }
                         else
                         {
-                            att = new MimePart(MimeKit.MimeTypes.GetMimeType(fname));
+                            bodyBuilder.Attachments.Add(fileName, data, contentType);
                         }
-
-                        att.Content = new MimeContent(content, ContentEncoding.Default);
-                        att.ContentDisposition = new ContentDisposition(ContentDisposition.Attachment);
-                        att.ContentTransferEncoding = ContentEncoding.Base64;
-                        att.FileName = attachment.FileName ?? fname;
-
-                        bodyBuilder.Attachments.Add(att);
                     }
                 }
             }
-
-            // Linked Resources (inline attachments with CID)
-            if (result.LinkedResources != null && !result.LinkedResources.IsEmpty())
-            {
-                foreach (var linkedResource in result.LinkedResources)
-                {
-                    if (linkedResource.FileBytes != null)
-                    {
-                        MimePart linkedPart = this._CreateLinkedResourcePart(
-                            linkedResource.ContenType ?? "application/octet-stream",
-                            new MemoryStream(linkedResource.FileBytes),
-                            linkedResource.FileName ?? "resource",
-                            linkedResource.ContentId ?? Guid.NewGuid().ToString());
-
-                        bodyBuilder.LinkedResources.Add(linkedPart);
-                    }
-                    else if (linkedResource.FilePath != null)
-                    {
-                        string contentType = linkedResource.ContenType ?? MimeKit.MimeTypes.GetMimeType(linkedResource.FilePath);
-                        string fileName = linkedResource.FileName ?? Path.GetFileName(linkedResource.FilePath);
-                        string contentId = linkedResource.ContentId ?? Guid.NewGuid().ToString();
-
-                        MimePart linkedPart = this._CreateLinkedResourcePart(
-                            contentType,
-                            File.OpenRead(linkedResource.FilePath),
-                            fileName,
-                            contentId);
-
-                        bodyBuilder.LinkedResources.Add(linkedPart);
-                    }
-                    else if (linkedResource.FileUrl != null)
-                    {
-                        var data = await this.httpClient.GetByteArrayAsync(linkedResource.FileUrl);
-                        var content = new MemoryStream(data);
-                        string fname = linkedResource.FileName ?? Path.GetFileName(linkedResource.FileUrl.ToString());
-
-                        if (!Path.HasExtension(fname))
-                        {
-                            var rr = await this.httpClient.GetAsync(linkedResource.FileUrl);
-                            var headers = rr.Content.Headers;
-
-                            if (headers != null && headers.ContentDisposition != null)
-                            {
-                                string? cdname = headers.ContentDisposition.FileName;
-                                if (!string.IsNullOrEmpty(cdname))
-                                {
-                                    fname = cdname;
-                                }
-                            }
-                        }
-
-                        string contentType = linkedResource.ContenType ?? MimeKit.MimeTypes.GetMimeType(fname);
-                        string contentId = linkedResource.ContentId ?? Guid.NewGuid().ToString();
-
-                        MimePart linkedPart = this._CreateLinkedResourcePart(
-                            contentType,
-                            content,
-                            fname,
-                            contentId);
-
-                        bodyBuilder.LinkedResources.Add(linkedPart);
-                    }
-                }
-            }
-
-
+             
             message.Body = bodyBuilder.ToMessageBody();
 
 
             return message;
-        }
-
-        /// <summary>
-        /// Creates a MimePart configured as a linked resource (inline attachment) with Content-ID.
-        /// </summary>
-        /// <param name="contentType">The MIME content type.</param>
-        /// <param name="contentStream">The content stream.</param>
-        /// <param name="fileName">The file name.</param>
-        /// <param name="contentId">The Content-ID for CID reference.</param>
-        /// <returns>A configured MimePart for use as a linked resource.</returns>
-        private MimePart _CreateLinkedResourcePart(string contentType, Stream contentStream, string fileName, string contentId)
-        {
-            var linkedPart = new MimePart(contentType)
-            {
-                Content = new MimeContent(contentStream, ContentEncoding.Default),
-                ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
-                ContentTransferEncoding = ContentEncoding.Base64,
-                FileName = fileName,
-                ContentId = contentId
-            };
-
-            return linkedPart;
         }
 
         /// <summary>

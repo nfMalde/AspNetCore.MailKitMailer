@@ -12,10 +12,9 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Added CID (Content-ID) support for inline/embedded images and resources in HTML emails.
-* New LinkedResources property on IMailerContextResult for embedding images via cid: URLs.
+* Added CID (Content-ID) support for inline/embedded images in HTML emails.
 * New AddLinkedResource methods on IAttachmentCollection for file paths, byte arrays, and URLs.
-* ContentId property added to AttachmentModel.
+* Reference embedded images in your views using: <img src="cid:your-content-id" />
 ]]>
 	</PackageReleaseNotes>
     <Description>
