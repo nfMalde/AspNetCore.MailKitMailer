@@ -39,9 +39,22 @@ namespace AspNetCore.MailKitMailer.Domain
         /// Reference in HTML using: &lt;img src="cid:{contentId}" /&gt;
         /// </summary>
         /// <param name="fileBytes">The file content as byte array.</param>
+        /// <param name="contentType">The MIME content type.</param>
+        /// <param name="contentId">The Content-ID to reference in HTML (without 'cid:' prefix).</param>
+        /// <param name="fileName">Optional file name override.</param>
+        IAttachmentCollection AddLinkedResource(byte[] fileBytes, string contentType, string contentId, string? fileName = null);
+
+        /// <summary>
+        /// Adds a linked resource (inline attachment) with a Content-ID for use in HTML emails.
+        /// This overload is kept for backward compatibility; prefer the overload with parameters
+        /// (byte[] fileBytes, string contentType, string contentId, string? fileName = null).
+        /// Reference in HTML using: &lt;img src="cid:{contentId}" /&gt;
+        /// </summary>
+        /// <param name="fileBytes">The file content as byte array.</param>
         /// <param name="fileName">The file name.</param>
         /// <param name="contentType">The MIME content type.</param>
         /// <param name="contentId">The Content-ID to reference in HTML (without 'cid:' prefix).</param>
+        [Obsolete("Use AddLinkedResource(byte[] fileBytes, string contentType, string contentId, string? fileName = null) instead.")]
         IAttachmentCollection AddLinkedResource(byte[] fileBytes, string fileName, string contentType, string contentId);
 
         /// <summary>
