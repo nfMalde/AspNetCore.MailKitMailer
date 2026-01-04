@@ -94,6 +94,102 @@ namespace AspNetCore.MailKitMailer.Data
         }
 
         /// <summary>
+        /// Adds a linked resource (inline attachment) with a Content-ID for use in HTML emails.
+        /// Reference in HTML using: &lt;img src="cid:{contentId}" /&gt;
+        /// </summary>
+        /// <param name="fileBytes">The file content as byte array.</param>
+        /// <param name="contentType">The MIME content type.</param>
+        /// <param name="contentId">The Content-ID to reference in HTML (without 'cid:' prefix).</param>
+        /// <param name="fileName">Optional file name override.</param>
+        public IAttachmentCollection AddLinkedResource(byte[] fileBytes, string contentType, string contentId, string? fileName = null)
+        {
+            this.attachments.Add(new AttachmentModel()
+            {
+                FileBytes = fileBytes,
+                FileName = fileName,
+                ContenType = contentType,
+                ContentId = contentId
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a linked resource (inline attachment) from a file path with a Content-ID.
+        /// Reference in HTML using: &lt;img src="cid:{contentId}" /&gt;
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="contentId">The Content-ID to reference in HTML (without 'cid:' prefix).</param>
+        /// <param name="fileName">Optional file name override.</param>
+        public IAttachmentCollection AddLinkedResource(string filePath, string contentId, string? fileName = null)
+        {
+            this.attachments.Add(new AttachmentModel()
+            {
+                FilePath = filePath,
+                FileName = fileName,
+                ContentId = contentId
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a linked resource (inline attachment) from a file path with a Content-ID and content type.
+        /// Reference in HTML using: &lt;img src="cid:{contentId}" /&gt;
+        /// </summary>
+        /// <param name="filePath">The path to the file.</param>
+        /// <param name="contentType">The MIME content type.</param>
+        /// <param name="contentId">The Content-ID to reference in HTML (without 'cid:' prefix).</param>
+        /// <param name="fileName">Optional file name override.</param>
+        public IAttachmentCollection AddLinkedResource(string filePath, string contentType, string contentId, string? fileName = null)
+        {
+            this.attachments.Add(new AttachmentModel()
+            {
+                FilePath = filePath,
+                ContenType = contentType,
+                FileName = fileName,
+                ContentId = contentId
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a linked resource (inline attachment) from a URL with a Content-ID.
+        /// Reference in HTML using: &lt;img src="cid:{contentId}" /&gt;
+        /// </summary>
+        /// <param name="url">The URL to download the file from.</param>
+        /// <param name="contentId">The Content-ID to reference in HTML (without 'cid:' prefix).</param>
+        /// <param name="fileName">Optional file name override.</param>
+        public IAttachmentCollection AddLinkedResource(Uri url, string contentId, string? fileName = null)
+        {
+            this.attachments.Add(new AttachmentModel()
+            {
+                FileUrl = url,
+                FileName = fileName,
+                ContentId = contentId
+            });
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a linked resource (inline attachment) from a URL with a Content-ID and content type.
+        /// Reference in HTML using: &lt;img src="cid:{contentId}" /&gt;
+        /// </summary>
+        /// <param name="url">The URL to download the file from.</param>
+        /// <param name="contentType">The MIME content type.</param>
+        /// <param name="contentId">The Content-ID to reference in HTML (without 'cid:' prefix).</param>
+        /// <param name="fileName">Optional file name override.</param>
+        public IAttachmentCollection AddLinkedResource(Uri url, string contentType, string contentId, string? fileName = null)
+        {
+            this.attachments.Add(new AttachmentModel()
+            {
+                FileUrl = url,
+                ContenType = contentType,
+                FileName = fileName,
+                ContentId = contentId
+            });
+            return this;
+        }
+
+        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>

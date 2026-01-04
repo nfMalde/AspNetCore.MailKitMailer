@@ -39,5 +39,23 @@ namespace MailKitMailerExample.Mailer
             return HtmlMail(emailAddresses, "Welcome dudes!", welcomeModelMultiple);
 
         }
+
+        /// <summary>
+        /// Sends a welcome email with an inline logo image using CID (Content-ID).
+        /// The logo will be embedded in the email and can be referenced in HTML via cid:company-logo
+        /// </summary>
+        /// <param name="username">The username</param>
+        /// <param name="email">The email address</param>
+        /// <param name="logoPath">Path to the logo image file</param>
+        public IMailerContextResult WelcomeMailWithLogo(string username, string email, string logoPath)
+        {
+            // Add the logo as a linked resource with Content-ID "company-logo"
+            // This can be referenced in the view using: <img src="cid:company-logo" />
+            return this.HtmlMail(
+                new EmailAddressModel(username, email),
+                $"Welcome {username}!",
+                new WelcomeModel() { Username = username, Date = DateTime.Now },
+                withAttachments: a => a.AddLinkedResource(logoPath, "company-logo"));
+        }
     }
 }

@@ -1,0 +1,13 @@
+@model WelcomeModel
+@{
+}
+
+<div style="text-align: center; padding: 20px;">
+    <img src="cid:company-logo" alt="Company Logo" style="max-width: 200px; margin-bottom: 20px;" />
+</div>
+
+<h1>Welcome @Model.Username!</h1>
+
+<p>You joined the club at @Model.Date.ToLongDateString()</p>
+
+<p>We're excited to have you on board!</p>

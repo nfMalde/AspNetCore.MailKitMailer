@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1]
+### Added
+- CID (Content-ID) support for inline/embedded images and resources in HTML emails
+
+#### How to Use Inline Images with CID
+
+**1. Add a linked resource in your mailer method:**
+```csharp
+public IMailerContextResult WelcomeMailWithLogo(string email, string logoPath)
+{
+    return this.HtmlMail(
+        new EmailAddressModel("User", email),
+        "Welcome!",
+        new WelcomeModel(),
+        withAttachments: a => a.AddLinkedResource(logoPath, "company-logo"));
+}
+```
+
+**2. Reference the image in your Razor view using `cid:`:**
+```html
+<img src="cid:company-logo" alt="Logo" />
+```
+
+The `AddLinkedResource` method supports file paths, byte arrays, and URLs. See the README for full documentation.
+
 ## [2.2.0] 
 * Attachments now support byte array and fixed filenames.
 * Updated dependencies to latest versions.

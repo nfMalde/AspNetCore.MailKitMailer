@@ -12,22 +12,20 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Attachments now support byte array and fixed filenames.
-* Updated dependencies to latest versions.
-* General code improvements and optimizations.
-* Added Async Method support for mailer contexts.
-* Updated to .NET 10
+* Added CID (Content-ID) support for inline/embedded images in HTML emails.
+* New AddLinkedResource methods on IAttachmentCollection for file paths, byte arrays, and URLs.
+* Reference embedded images in your views using: <img src="cid:your-content-id" />
 ]]>
 	</PackageReleaseNotes>
     <Description>
 <![CDATA[
 ## What is this?
-A slim and simple client to handle HTML emails in .NET 10+ for MailKit. This client allows you to send emails via MailKit rendered by the Razor view engine, including helpers for CSS inlining and absolute URLs.
+A slim and simple client to handle HTML emails in .NET 10+ for MailKit. This client allows you to send emails via MailKit rendered by the Razor view engine, including helpers for CSS inlining, absolute URLs, and CID support for inline/embedded images.
 ]]>
 	</Description>
     <Copyright>2024 Malte Peters</Copyright>
 	<PackageReadmeFile>README.MD</PackageReadmeFile>
-	<Version>2.0.0</Version>
+	<Version>2.2.1</Version>
 
   </PropertyGroup>
 

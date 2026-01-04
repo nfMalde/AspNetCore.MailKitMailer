@@ -13,5 +13,11 @@ namespace AspNetCore.MailKitMailer.Models
         public Uri? FileUrl { get; set; }
 
         public string? ContenType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Content-ID for inline/linked resources.
+        /// Use this to reference the attachment in HTML via cid:{ContentId}
+        /// </summary>
+        public string? ContentId { get; set; }
     }
 }

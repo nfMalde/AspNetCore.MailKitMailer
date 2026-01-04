@@ -285,40 +285,102 @@ namespace AspNetCore.MailKitMailer.Data
             bodyBuilder.TextBody = textBody;
            
     
-            // Attachments
+            // Attachments and LinkedResources
             if (result.Attachments != null && !result.Attachments.IsEmpty())
             {
-                foreach(var attachment in result.Attachments)
+                foreach (var attachment in result.Attachments)
                 {
-                    if (attachment.FileBytes != null) 
-                    {
-                        bodyBuilder.Attachments.Add(attachment.FileName ?? "unknown.file", attachment.FileBytes);
-                    }
+                    bool isLinkedResource = !string.IsNullOrEmpty(attachment.ContentId);
 
+                    if (attachment.FileBytes != null)
+                    {
+                        var contentType = ContentType.Parse(attachment.ContenType ?? "application/octet-stream");
+                        var fileName = attachment.FileName ?? "unknown.file";
+                        
+                        if (isLinkedResource)
+                        {
+                            var linkedResource = bodyBuilder.LinkedResources.Add(fileName, attachment.FileBytes, contentType);
+                            linkedResource.ContentId = attachment.ContentId;
+                        }
+                        else
+                        {
+                            bodyBuilder.Attachments.Add(fileName, attachment.FileBytes, contentType);
+                        }
+                    }
                     else if (attachment.FilePath != null)
                     {
-                        MimePart? att = null;
-
-                        if (attachment.ContenType != null)
+                        if (isLinkedResource)
                         {
-                            att = new MimePart(attachment.ContenType);
-                        } else
-                        {
-                            att = new MimePart(MimeKit.MimeTypes.GetMimeType(attachment.FilePath));
+                            var fname = Path.GetFileName(attachment.FilePath);
+                            var contentType = attachment.ContenType != null 
+                                ? ContentType.Parse(attachment.ContenType)
+                                : ContentType.Parse(MimeKit.MimeTypes.GetMimeType(fname));
+                            var fileName = attachment.FileName ?? fname;
+                            
+                            // Use stream-based approach to avoid loading entire file into memory
+                            // MimeContent takes ownership of the stream and will dispose it
+                            var fileStream = File.OpenRead(attachment.FilePath);
+                            try
+                            {
+                                var linkedPart = new MimePart(contentType)
+                                {
+                                    Content = new MimeContent(fileStream),
+                                    ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
+                                    ContentTransferEncoding = ContentEncoding.Base64,
+                                    FileName = fileName,
+                                    ContentId = attachment.ContentId ?? Guid.NewGuid().ToString()
+                                };
+                                bodyBuilder.LinkedResources.Add(linkedPart);
+                            }
+                            catch
+                            {
+                                // If an error occurs, ensure the stream is disposed
+                                fileStream?.Dispose();
+                                throw;
+                            }
                         }
-
-                        att.Content = new MimeContent(File.OpenRead(attachment.FilePath), ContentEncoding.Default);
-                        att.ContentDisposition = new ContentDisposition(ContentDisposition.Attachment);
-                        att.ContentTransferEncoding = ContentEncoding.Base64;
-                        att.FileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
-
-                        bodyBuilder.Attachments.Add(att);
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(attachment.ContenType))
+                            {
+                                var contentType = ContentType.Parse(attachment.ContenType);
+                                var fileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
+                                
+                                // Use stream-based approach to avoid loading entire file into memory
+                                // MimeContent takes ownership of the stream and will dispose it
+                                var fileStream = File.OpenRead(attachment.FilePath);
+                                try
+                                {
+                                    var attachmentPart = new MimePart(contentType)
+                                    {
+                                        Content = new MimeContent(fileStream),
+                                        ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                                        ContentTransferEncoding = ContentEncoding.Base64,
+                                        FileName = fileName
+                                    };
+                                    bodyBuilder.Attachments.Add(attachmentPart);
+                                }
+                                catch
+                                {
+                                    // If an error occurs, ensure the stream is disposed
+                                    fileStream?.Dispose();
+                                    throw;
+                                }
+                            }
+                            else
+                            {
+                                bodyBuilder.Attachments.Add(attachment.FilePath);
+                                if (attachment.FileName != null)
+                                {
+                                    var att = bodyBuilder.Attachments[bodyBuilder.Attachments.Count - 1];
+                                    att.ContentDisposition!.FileName = attachment.FileName;
+                                }
+                            }
+                        }
                     }
                     else if (attachment.FileUrl != null)
                     {
-                        
                         var data = await this.httpClient.GetByteArrayAsync(attachment.FileUrl);
-                        var content = new System.IO.MemoryStream(data);
                         string fname = Path.GetFileName(attachment.FileUrl.ToString());
 
                         if (!Path.HasExtension(fname))
@@ -336,31 +398,26 @@ namespace AspNetCore.MailKitMailer.Data
                                     fname = cdname;
                                 }
                             }
-
                         }
 
-                        MimePart? att = null;
+                        var contentType = attachment.ContenType != null 
+                            ? ContentType.Parse(attachment.ContenType)
+                            : ContentType.Parse(MimeKit.MimeTypes.GetMimeType(fname));
+                        var fileName = attachment.FileName ?? fname;
 
-                        if (attachment.ContenType != null)
+                        if (isLinkedResource)
                         {
-                            att = new MimePart(attachment.ContenType);
+                            var linkedResource = bodyBuilder.LinkedResources.Add(fileName, data, contentType);
+                            linkedResource.ContentId = attachment.ContentId;
                         }
                         else
                         {
-                            att = new MimePart(MimeKit.MimeTypes.GetMimeType(fname));
+                            bodyBuilder.Attachments.Add(fileName, data, contentType);
                         }
-
-                        att.Content = new MimeContent(content, ContentEncoding.Default);
-                        att.ContentDisposition = new ContentDisposition(ContentDisposition.Attachment);
-                        att.ContentTransferEncoding = ContentEncoding.Base64;
-                        att.FileName = attachment.FileName ?? fname;
-
-                        bodyBuilder.Attachments.Add(att);
                     }
                 }
             }
-
-
+             
             message.Body = bodyBuilder.ToMessageBody();
 
 
