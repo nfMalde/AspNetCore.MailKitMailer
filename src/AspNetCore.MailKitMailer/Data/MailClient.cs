@@ -311,12 +311,15 @@ namespace AspNetCore.MailKitMailer.Data
                     {
                         if (isLinkedResource)
                         {
-                            var linkedResource = bodyBuilder.LinkedResources.Add(attachment.FilePath);
+                            var fname = Path.GetFileName(attachment.FilePath);
+                            var contentType = attachment.ContenType != null 
+                                ? ContentType.Parse(attachment.ContenType)
+                                : ContentType.Parse(MimeKit.MimeTypes.GetMimeType(fname));
+                            var fileName = attachment.FileName ?? fname;
+                            var data = await File.ReadAllBytesAsync(attachment.FilePath);
+                            
+                            var linkedResource = bodyBuilder.LinkedResources.Add(fileName, data, contentType);
                             linkedResource.ContentId = attachment.ContentId;
-                            if (attachment.FileName != null)
-                            {
-                                linkedResource.ContentDisposition!.FileName = attachment.FileName;
-                            }
                         }
                         else
                         {
