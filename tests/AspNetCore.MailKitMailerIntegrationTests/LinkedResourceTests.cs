@@ -63,6 +63,10 @@ namespace AspNetCore.MailKitMailerIntegrationTests
             rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
                 "Expected raw email to contain Content-Id header with 'testimage'");
             
+            // Verify the HTML body references the CID
+            rawData.ShouldContain("cid:testimage", customMessage: 
+                "Expected HTML body to contain CID reference");
+            
             // Verify multipart/related structure is present
             rawData.ShouldContain("multipart/related", customMessage: 
                 "Expected email to have multipart/related structure for linked resources");
@@ -86,6 +90,10 @@ namespace AspNetCore.MailKitMailerIntegrationTests
             rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
                 "Expected raw email to contain Content-Id header with 'testimage'");
             
+            // Verify the HTML body references the CID
+            rawData.ShouldContain("cid:testimage", customMessage: 
+                "Expected HTML body to contain CID reference");
+            
             // Verify multipart/related structure is present
             rawData.ShouldContain("multipart/related", customMessage: 
                 "Expected email to have multipart/related structure for linked resources");
@@ -108,6 +116,10 @@ namespace AspNetCore.MailKitMailerIntegrationTests
             // Verify the Content-ID header is present with our custom ID
             rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
                 "Expected raw email to contain Content-Id header with 'testimage'");
+            
+            // Verify the HTML body references the CID
+            rawData.ShouldContain("cid:testimage", customMessage: 
+                "Expected HTML body to contain CID reference");
             
             // Verify multipart/related structure is present
             rawData.ShouldContain("multipart/related", customMessage: 
@@ -148,6 +160,10 @@ namespace AspNetCore.MailKitMailerIntegrationTests
                 rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
                     "Expected raw email to contain Content-Id header with 'testimage'");
                 
+                // Verify the HTML body references the CID
+                rawData.ShouldContain("cid:testimage", customMessage: 
+                    "Expected HTML body to contain CID reference");
+                
                 // Verify multipart/related structure is present
                 rawData.ShouldContain("multipart/related", customMessage: 
                     "Expected email to have multipart/related structure for linked resources");
@@ -179,6 +195,10 @@ namespace AspNetCore.MailKitMailerIntegrationTests
                 // Verify the Content-ID header is present with our custom ID
                 rawData.ShouldContain("Content-Id: <testimage>", customMessage: 
                     "Expected raw email to contain Content-Id header with 'testimage'");
+                
+                // Verify the HTML body references the CID
+                rawData.ShouldContain("cid:testimage", customMessage: 
+                    "Expected HTML body to contain CID reference");
                 
                 // Verify multipart/related structure is present
                 rawData.ShouldContain("multipart/related", customMessage: 

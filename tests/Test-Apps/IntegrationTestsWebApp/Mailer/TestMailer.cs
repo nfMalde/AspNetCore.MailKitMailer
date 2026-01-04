@@ -173,7 +173,6 @@ namespace IntegrationTestsWebApp.Mailer
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource File",
                 null, withAttachments: a => a.AddLinkedResource(imagePath, contentId));
-             
 
             return result;
         }

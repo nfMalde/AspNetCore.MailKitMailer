@@ -309,8 +309,6 @@ namespace AspNetCore.MailKitMailer.Data
                     }
                     else if (attachment.FilePath != null)
                     {
-                        var fileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
-                        
                         if (isLinkedResource)
                         {
                             var linkedResource = bodyBuilder.LinkedResources.Add(attachment.FilePath);
