@@ -193,7 +193,7 @@ namespace IntegrationTestsWebApp.Mailer
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource Bytes",
                 null,
-                withAttachments: a => a.AddLinkedResource(imageBytes, fileName, contentType, contentId));
+                withAttachments: a => a.AddLinkedResource(imageBytes, contentType, contentId, fileName));
         }
 
         public async Task<IMailerContextResult> Test_LinkedResource_BytesAsync(byte[] imageBytes, string fileName, string contentType, string contentId)
@@ -203,7 +203,7 @@ namespace IntegrationTestsWebApp.Mailer
                 new EmailAddressModel("test", "test@localhost"),
                 "Test-LinkedResource Bytes",
                 null,
-                withAttachments: a => a.AddLinkedResource(imageBytes, fileName, contentType, contentId));
+                withAttachments: a => a.AddLinkedResource(imageBytes, contentType, contentId, fileName));
         }
 
         public IMailerContextResult Test_LinkedResource_Url(Uri imageUrl, string contentId)
