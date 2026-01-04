@@ -7,6 +7,7 @@ using Xunit;
 using System.Linq;
 namespace AspNetCore.MailKitMailerIntegrationTests
 {
+    [Collection("DownloadServerTests")]
     public class AttachmentTests:Abstracts.MailTestAbstracts
     {
         public AttachmentTests():base()
