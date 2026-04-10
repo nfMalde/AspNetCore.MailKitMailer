@@ -312,20 +312,70 @@ namespace AspNetCore.MailKitMailer.Data
                     {
                         if (isLinkedResource)
                         {
-                            var linkedResource = bodyBuilder.LinkedResources.Add(attachment.FilePath);
-                            linkedResource.ContentId = attachment.ContentId;
-                            if (attachment.FileName != null)
+                            var fname = Path.GetFileName(attachment.FilePath);
+                            var contentType = attachment.ContenType != null 
+                                ? ContentType.Parse(attachment.ContenType)
+                                : ContentType.Parse(MimeKit.MimeTypes.GetMimeType(fname));
+                            var fileName = attachment.FileName ?? fname;
+                            
+                            // Use stream-based approach to avoid loading entire file into memory
+                            // MimeContent takes ownership of the stream and will dispose it
+                            var fileStream = File.OpenRead(attachment.FilePath);
+                            try
                             {
-                                linkedResource.ContentDisposition!.FileName = attachment.FileName;
+                                var linkedPart = new MimePart(contentType)
+                                {
+                                    Content = new MimeContent(fileStream),
+                                    ContentDisposition = new ContentDisposition(ContentDisposition.Inline),
+                                    ContentTransferEncoding = ContentEncoding.Base64,
+                                    FileName = fileName,
+                                    ContentId = attachment.ContentId ?? Guid.NewGuid().ToString()
+                                };
+                                bodyBuilder.LinkedResources.Add(linkedPart);
+                            }
+                            catch
+                            {
+                                // If an error occurs, ensure the stream is disposed
+                                fileStream?.Dispose();
+                                throw;
                             }
                         }
                         else
                         {
-                            bodyBuilder.Attachments.Add(attachment.FilePath);
-                            if (attachment.FileName != null)
+                            if (!string.IsNullOrEmpty(attachment.ContenType))
                             {
-                                var att = bodyBuilder.Attachments[bodyBuilder.Attachments.Count - 1];
-                                att.ContentDisposition!.FileName = attachment.FileName;
+                                var contentType = ContentType.Parse(attachment.ContenType);
+                                var fileName = attachment.FileName ?? Path.GetFileName(attachment.FilePath);
+                                
+                                // Use stream-based approach to avoid loading entire file into memory
+                                // MimeContent takes ownership of the stream and will dispose it
+                                var fileStream = File.OpenRead(attachment.FilePath);
+                                try
+                                {
+                                    var attachmentPart = new MimePart(contentType)
+                                    {
+                                        Content = new MimeContent(fileStream),
+                                        ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                                        ContentTransferEncoding = ContentEncoding.Base64,
+                                        FileName = fileName
+                                    };
+                                    bodyBuilder.Attachments.Add(attachmentPart);
+                                }
+                                catch
+                                {
+                                    // If an error occurs, ensure the stream is disposed
+                                    fileStream?.Dispose();
+                                    throw;
+                                }
+                            }
+                            else
+                            {
+                                bodyBuilder.Attachments.Add(attachment.FilePath);
+                                if (attachment.FileName != null)
+                                {
+                                    var att = bodyBuilder.Attachments[bodyBuilder.Attachments.Count - 1];
+                                    att.ContentDisposition!.FileName = attachment.FileName;
+                                }
                             }
                         }
                     }

@@ -457,7 +457,7 @@ public IMailerContextResult NewsletterWithImages(string email, byte[] headerImag
         withAttachments: a =>
         {
             // From byte array (e.g., dynamically generated image)
-            a.AddLinkedResource(headerImage, "header.png", "image/png", "header-image");
+            a.AddLinkedResource(headerImage, "image/png", "header-image", "header.png");
             
             // From file path
             a.AddLinkedResource(footerImagePath, "footer-image");
