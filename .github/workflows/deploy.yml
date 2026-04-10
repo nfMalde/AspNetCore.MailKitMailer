@@ -5,10 +5,10 @@ on:
 
 jobs:
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout Sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Setup .NET 10
@@ -21,13 +21,13 @@ jobs:
           dotnet test
   version:
     needs: test
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     outputs: 
       version: ${{ steps.newversion.outputs.version }}
       tag: ${{ steps.newversion.outputs.tag }}      
     steps:
     - name: Checkout Sources
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
     - name: Set New Version
@@ -58,13 +58,13 @@ jobs:
             }
   prepublish:
       needs: [test, version]
-      runs-on: windows-latest
+      runs-on: ubuntu-latest
       outputs:
         description: ${{ steps.meta.outputs.description }}
         changeinfo: ${{ steps.meta.outputs.changeinfo }}
       steps:
       - name: Checkout Sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name : Get Meta Data
@@ -79,28 +79,27 @@ jobs:
 
   publish:
       needs: [test, version, prepublish]
-      runs-on: windows-latest
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
       steps:
       - name: Setup .NET 10
         uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
       - name: Checkout Sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Create Package
         run: |
           dotnet build src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.version }} -p:PackageVersion=${{ needs.version.outputs.version }}
           dotnet pack src/AspNetCore.MailKitMailer/AspNetCore.MailKitMailer.csproj -c Release -p:AssemblyVersion=${{ needs.version.outputs.version }} -p:PackageVersion=${{ needs.version.outputs.version }} --output nget_pkg
-      - name: Create Release and Tag
-        id: create_release
-        uses: actions/create-release@latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ needs.version.outputs.version  }}
-          release_name: Release v${{ needs.version.outputs.version  }}
+          tag_name: v${{ needs.version.outputs.version }}
+          name: Release v${{ needs.version.outputs.version }}
           body: |
            # Release Info Version ${{ needs.version.outputs.version  }}
            ## Info
@@ -109,36 +108,11 @@ jobs:
            ${{fromJSON(needs.prepublish.outputs.changeinfo)}}
           draft: false
           prerelease: false
+          files: |
+            ./nget_pkg/AspNetCore.MailKitMailer.${{ needs.version.outputs.version }}.nupkg
+            src/AspNetCore.MailKitMailer/bin/Release/net10.0/AspNetCore.MailKitMailer.dll
       - name: Delete Release Tag
-        if: ${{needs.version.outputs.tag}}
-        uses: dev-drprasad/delete-tag-and-release@v1.1
-        with:
-          tag_name: ${{needs.version.outputs.tag}}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          delete_release: false
-      - name: Upload Release Asset Pkg
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./nget_pkg/AspNetCore.MailKitMailer.${{ needs.version.outputs.version }}.nupkg
-          asset_name: AspNetCore.MailKitMailer.${{ needs.version.outputs.version }}.nupkg
-          asset_content_type: application/zip
-      - name: Upload Release Asset DLL
-        id: upload-release-asset2 
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: src/AspNetCore.MailKitMailer/bin/Release/net10.0/AspNetCore.MailKitMailer.dll
-          asset_name: AspNetCore.MailKitMailer.dll
-          asset_content_type: application/octet-stream
+        if: ${{ needs.version.outputs.tag }}
+        run: git push --delete origin ${{ needs.version.outputs.tag }}
       - name: Publish package to nuget
-        id: nugetpush
         run: dotnet nuget push  "nget_pkg/AspNetCore.MailKitMailer.${{ needs.version.outputs.version }}.nupkg" -k ${{secrets.NUGET_KEY}} -s https://api.nuget.org/v3/index.json  
-
-
-      

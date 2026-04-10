@@ -34,6 +34,9 @@ namespace IntegrationTestsWebApp.Mailer
 
         IMailerContextResult Test_LinkedResource_Url(Uri imageUrl, string contentId);
         Task<IMailerContextResult> Test_LinkedResource_UrlAsync(Uri imageUrl, string contentId);
+
+        IMailerContextResult Test_SmtpOverride(SMTPConfigModel overrideConfig);
+        Task<IMailerContextResult> Test_SmtpOverrideAsync(SMTPConfigModel overrideConfig);
     }
 
 
@@ -223,6 +226,25 @@ namespace IntegrationTestsWebApp.Mailer
                 "Test-LinkedResource Url",
                 null,
                 withAttachments: a => a.AddLinkedResource(imageUrl, contentId));
+        }
+
+        public IMailerContextResult Test_SmtpOverride(SMTPConfigModel overrideConfig)
+        {
+            this.SmtpConfigOverride = overrideConfig;
+
+            return HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-SmtpOverride");
+        }
+
+        public async Task<IMailerContextResult> Test_SmtpOverrideAsync(SMTPConfigModel overrideConfig)
+        {
+            await Task.Delay(1);
+            this.SmtpConfigOverride = overrideConfig;
+
+            return HtmlMail(
+                new EmailAddressModel("test", "test@localhost"),
+                "Test-SmtpOverride");
         }
     }
 }

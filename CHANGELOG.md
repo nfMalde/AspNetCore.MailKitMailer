@@ -4,6 +4,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0]
+### Added
+- SMTP configuration override per mailer context via `SmtpConfigOverride` property on `IMailerContext` / `MailerContextAbstract`. Allows sending emails through different SMTP servers depending on the mailer context.
+- `OnConfigureSmtpClient(SmtpClient client)` hook on `IMailerContext` / `MailerContextAbstract`. Override this in your mailer context to configure the full MailKit `SmtpClient` before it connects (e.g., `ServerCertificateValidationCallback`, `ClientCertificates`, `ProxyClient`, `Timeout`, `AuthenticationMechanisms`, etc.).
+- New `AddAspNetCoreMailKitMailer(Action<SmtpClient>)` extension overload for registering services with a client configuration action only.
+- All existing `AddAspNetCoreMailKitMailer` overloads now accept an optional `Action<SmtpClient>` parameter for global client configuration at registration time.
+
+### Changed
+- Refactored `MailClient` internals to reduce duplicated code by extracting `_ResolveContext`, `_ResolveSmtpConfig`, and `_SendMessageAsync` helper methods.
+- Updated all dependencies to latest versions:
+  - MailKit 4.14.1 → 4.15.1
+  - Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation 10.0.1 → 10.0.5
+  - Microsoft.Extensions.Configuration 10.0.1 → 10.0.5
+  - Microsoft.Extensions.Configuration.Binder 10.0.1 → 10.0.5
+  - Microsoft.Extensions.Options 10.0.1 → 10.0.5
+  - coverlet.collector 6.0.4 → 8.0.1
+  - Microsoft.NET.Test.Sdk 18.0.1 → 18.4.0
+
+### Removed
+- Removed unused `RestSharp.Serializers.NewtonsoftJson` dependency from integration tests.
+
+### Fixed
+- Resolved nullable warnings (CS8601/CS8604) in `MailClient.PrepareMessage` for `Subject` and `Email` properties.
+
+### Breaking changes
+- Dependency versions have been bumped significantly. If you depend on specific versions of MailKit, MimeKit, or the Microsoft.AspNetCore.* packages, please test your application after upgrading.
+
 ## [2.2.1]
 ### Added
 - CID (Content-ID) support for inline/embedded images and resources in HTML emails

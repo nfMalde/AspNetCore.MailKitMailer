@@ -136,6 +136,29 @@ namespace AspNetCore.MailKitMailer
         }
 
         /// <summary>
+        /// Adds the ASP net core mail kit mailer with a client configuration action only.
+        /// SMTP settings should be provided via IConfiguration or SMTPConfigModel separately.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="configureClient">Action to configure the smtp client.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, Action<SmtpClient> configureClient)
+        {
+            services = CheckForHttpClient(services);
+            services.Configure<Models.SMTPConfigModel>(x => x = new Models.SMTPConfigModel());
+            services.Configure<Models.MailerViewEngineOptions>(x => x = new Models.MailerViewEngineOptions());
+            services.AddScoped<IMailerViewEngine, MailerViewEngine>();
+            services.AddScoped<IMailClient, MailClient>();
+            services.AddScoped<IMailkitSMTPClient>(x => {
+                MailkitSMTPClient client = new MailkitSMTPClient();
+                configureClient(client);
+                return client as IMailkitSMTPClient;
+            });
+
+            return services;
+        }
+
+        /// <summary>
         /// Registers all mail contexes.
         /// </summary>
         /// <param name="services">The services.</param>

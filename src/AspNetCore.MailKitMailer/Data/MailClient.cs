@@ -117,33 +117,13 @@ namespace AspNetCore.MailKitMailer.Data
         /// <returns></returns>
         public async Task SendAsync<TContext>(Expression<Func<TContext, IMailerContextResult>> contextBuilder) where TContext : class, IMailerContext
         {
-            TContext? ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
-
-            if (ctx == null)
-            {
-                throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
-            }
-
-
+            TContext ctx = this._ResolveContext<TContext>();
             ctx.OnBeforeSend(this.serviceProvider);
 
             IMailerContextResult result = this._CompileMailerContext<TContext>(contextBuilder);
-            MimeMessage message = await this.PrepareMessage(this.serviceProvider.GetRequiredService<TContext>(), result);
-
-            this.client.CheckCertificateRevocation = this.smtpConfig.Value?.CheckCertificateRevocation ?? true;
-
-            await this.client.ConnectAsync(this.smtpConfig.Value?.Host, this.smtpConfig?.Value?.Port ?? 25, this.smtpConfig?.Value?.UseSSL ?? false);
-
-            if (this.smtpConfig?.Value?.DoAuthenticate ?? false)
-            {
-                await this.client.AuthenticateAsync(this.smtpConfig.Value.Username, this.smtpConfig.Value.Password);
-            }
-
-            await this.client.SendAsync(message);
-            await this.client.DisconnectAsync(true);
+            await this._SendMessageAsync(ctx, result);
 
             ctx.OnAfterSend(this.serviceProvider);
-
         }
 
         /// <summary>
@@ -154,34 +134,15 @@ namespace AspNetCore.MailKitMailer.Data
         /// <returns></returns>
         public async Task SendAsync<TContext>(Expression<Func<TContext, Task<IMailerContextResult>>> contextBuilder) where TContext : class, IMailerContext
         {
-            TContext? ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
-
-            if (ctx == null)
-            {
-                throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
-            }
-
-
+            TContext ctx = this._ResolveContext<TContext>();
             ctx.OnBeforeSend(this.serviceProvider);
 
             IMailerContextResult result = await this._CompileMailerContextAsync<TContext>(contextBuilder);
-            MimeMessage message = await this.PrepareMessage(this.serviceProvider.GetRequiredService<TContext>(), result);
-
-            this.client.CheckCertificateRevocation = this.smtpConfig.Value?.CheckCertificateRevocation ?? true;
-
-            await this.client.ConnectAsync(this.smtpConfig.Value?.Host, this.smtpConfig?.Value?.Port ?? 25, this.smtpConfig?.Value?.UseSSL ?? false);
-
-            if (this.smtpConfig?.Value?.DoAuthenticate ?? false)
-            {
-                await this.client.AuthenticateAsync(this.smtpConfig.Value.Username, this.smtpConfig.Value.Password);
-            }
-
-            await this.client.SendAsync(message);
-            await this.client.DisconnectAsync(true);
+            await this._SendMessageAsync(ctx, result);
 
             ctx.OnAfterSend(this.serviceProvider);
-
         }
+
         /// <summary>
         /// Asynchronously gets the content of the email based on the provided context.
         /// </summary>
@@ -190,17 +151,9 @@ namespace AspNetCore.MailKitMailer.Data
         /// <returns>A task that represents the asynchronous operation. The task result contains the email content as a string.</returns>
         public async Task<string?> GetContentAsync<TContext>(Expression<Func<TContext, IMailerContextResult>> contextBuilder) where TContext : class, IMailerContext
         {
-            TContext? ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
-           
-            if (ctx == null)
-            {
-                throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
-            }
-
+            TContext ctx = this._ResolveContext<TContext>();
             IMailerContextResult result = this._CompileMailerContext<TContext>(contextBuilder);
-
-           return  await this._RenderView(result, ctx);    
-
+            return await this._RenderView(result, ctx);
         }
 
         /// <summary>
@@ -211,17 +164,65 @@ namespace AspNetCore.MailKitMailer.Data
         /// <returns>A task that represents the asynchronous operation. The task result contains the email content as a string.</returns>
         public async Task<string?> GetContentAsync<TContext>(Expression<Func<TContext, Task<IMailerContextResult>>> contextBuilder) where TContext : class, IMailerContext
         {
+            TContext ctx = this._ResolveContext<TContext>();
+            IMailerContextResult result = await this._CompileMailerContextAsync<TContext>(contextBuilder);
+            return await this._RenderView(result, ctx);
+        }
+
+        /// <summary>
+        /// Resolves the mailer context from the service provider.
+        /// </summary>
+        /// <typeparam name="TContext">The type of the context.</typeparam>
+        /// <returns>The resolved context instance.</returns>
+        /// <exception cref="System.Exception">Thrown when the context type is not registered.</exception>
+        private TContext _ResolveContext<TContext>() where TContext : class, IMailerContext
+        {
             TContext? ctx = this.serviceProvider.GetService(typeof(TContext)) as TContext;
-           
+
             if (ctx == null)
             {
                 throw new Exception($"Mailer Contex of type {typeof(TContext)} were not found.");
             }
 
-            IMailerContextResult result = await this._CompileMailerContextAsync<TContext>(contextBuilder);
+            return ctx;
+        }
 
-           return  await this._RenderView(result, ctx);    
+        /// <summary>
+        /// Resolves the effective SMTP configuration, using the context override if available.
+        /// </summary>
+        /// <param name="context">The mailer context.</param>
+        /// <returns>The effective SMTP configuration.</returns>
+        private SMTPConfigModel _ResolveSmtpConfig(IMailerContext context)
+        {
+            return context.SmtpConfigOverride ?? this.smtpConfig.Value ?? new SMTPConfigModel();
+        }
 
+        /// <summary>
+        /// Sends the prepared message via SMTP.
+        /// </summary>
+        /// <param name="ctx">The mailer context.</param>
+        /// <param name="result">The mailer context result.</param>
+        private async Task _SendMessageAsync(IMailerContext ctx, IMailerContextResult result)
+        {
+            MimeMessage message = await this.PrepareMessage(ctx, result);
+            SMTPConfigModel config = this._ResolveSmtpConfig(ctx);
+
+            this.client.CheckCertificateRevocation = config.CheckCertificateRevocation;
+
+            if (this.client is SmtpClient smtpClient)
+            {
+                ctx.OnConfigureSmtpClient(smtpClient);
+            }
+
+            await this.client.ConnectAsync(config.Host, config.Port, config.UseSSL);
+
+            if (config.DoAuthenticate)
+            {
+                await this.client.AuthenticateAsync(config.Username, config.Password);
+            }
+
+            await this.client.SendAsync(message);
+            await this.client.DisconnectAsync(true);
         }
 
         /// <summary>
@@ -233,9 +234,9 @@ namespace AspNetCore.MailKitMailer.Data
         private async Task<MimeMessage> PrepareMessage(IMailerContext context, IMailerContextResult result)
         {
             MimeMessage message = new MimeKit.MimeMessage();
-            message.Subject = result.Subject;
+            message.Subject = result.Subject ?? string.Empty;
 
-            EmailAddressModel from = result.From ?? context.From ?? this.smtpConfig.Value?.FromAddress ?? new EmailAddressModel() { Email = "root@localhost", Name = "Root" };
+            EmailAddressModel from = result.From ?? context.From ?? this._ResolveSmtpConfig(context).FromAddress ?? new EmailAddressModel() { Email = "root@localhost", Name = "Root" };
             
             List< EmailAddressModel> to =  new List<EmailAddressModel>(result.To);
             List<EmailAddressModel> cc = new List<EmailAddressModel>(result.CC);
@@ -258,18 +259,18 @@ namespace AspNetCore.MailKitMailer.Data
             }
 
             //From
-            message.From.Add(new MailboxAddress(from.Name, from.Email));
+            message.From.Add(new MailboxAddress(from.Name, from.Email ?? "root@localhost"));
 
             // To
-            message.To.AddRange(to.Select(x => new MailboxAddress(x.Name, x.Email)));
+            message.To.AddRange(to.Select(x => new MailboxAddress(x.Name, x.Email ?? string.Empty)));
 
             // CC
-            message.Cc.AddRange(cc.Select(x => new MailboxAddress(x.Name, x.Email)));
+            message.Cc.AddRange(cc.Select(x => new MailboxAddress(x.Name, x.Email ?? string.Empty)));
 
-            // Add defaults for cc
-            message.Bcc.AddRange(bcc.Select(x => new MailboxAddress(x.Name, x.Email)));
+            // BCC
+            message.Bcc.AddRange(bcc.Select(x => new MailboxAddress(x.Name, x.Email ?? string.Empty)));
              
-            context.DefaultBCCReceipients?.ToList().ForEach(addr => message.Bcc.Add(new MailboxAddress(addr.Name, addr.Email)));
+            context.DefaultBCCReceipients?.ToList().ForEach(addr => message.Bcc.Add(new MailboxAddress(addr.Name, addr.Email ?? string.Empty)));
              
             // Render the view
             string htmlBody = await this._RenderView(result, context);
@@ -521,17 +522,8 @@ namespace AspNetCore.MailKitMailer.Data
             } 
 
             string defaultViewName = exp.Method.Name;
-           
 
-            // Load Mailer Context
-            TContext? mailerContext = this.serviceProvider.GetService(typeof(TContext)) as TContext;
-
-            if (mailerContext == null)
-            {
-                throw new Exception($"Unable to load MailerContext {typeof(TContext).FullName}. Service Provider returned null.");
-            }
-
-            // Compile expression
+            TContext mailerContext = this._ResolveContext<TContext>();
 
             IMailerContextResult r = expression.Compile()(mailerContext);
 
@@ -539,7 +531,6 @@ namespace AspNetCore.MailKitMailer.Data
             {
                 r.View = defaultViewName; 
             } 
-
 
             return r;
         }
@@ -565,17 +556,8 @@ namespace AspNetCore.MailKitMailer.Data
             } 
 
             string defaultViewName = exp.Method.Name;
-           
 
-            // Load Mailer Context
-            TContext? mailerContext = this.serviceProvider.GetService(typeof(TContext)) as TContext;
-
-            if (mailerContext == null)
-            {
-                throw new Exception($"Unable to load MailerContext {typeof(TContext).FullName}. Service Provider returned null.");
-            }
-
-            // Compile expression
+            TContext mailerContext = this._ResolveContext<TContext>();
 
             IMailerContextResult r = await expression.Compile()(mailerContext);
 
