@@ -7,7 +7,9 @@ This Mail Client is based on MailKit to provide HTML-Emails rendered by razor vi
 
 
 ## Other Versions
-All other version except 2.1.x are outdated and not maintained anymore. Please upgrade to the latest version if possible.
+All other versions except 2.x are outdated and not maintained anymore. Please upgrade to the latest version if possible.
+
+> **Breaking changes in 2.3.0:** All dependencies have been updated to their latest versions. This may cause breaking changes if you rely on specific versions of MailKit, MimeKit, or the Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation packages. Please test your application thoroughly after upgrading.
 
 
 
@@ -487,6 +489,103 @@ The class has to be public
 The class exntends `AspNetCore.MailKitMailer.Data.MailerContextAbstract`.
 If you want to register it as interface your interface needs to also extend `AspNetCore.MailKitMailer.Domain.IMailerContext`.
 This all done your mail contex is automaically available via dependency injection.
+
+#### Overriding SMTP configuration per mailer context
+
+Sometimes you need to send emails through a different SMTP server depending on the mailer context. For example, transactional emails might go through a different provider than marketing emails.
+
+You can override the SMTP configuration per context by setting `SmtpConfigOverride` in the `OnBeforeSend` hook. This ensures the override is applied right before each send and doesn't persist on the instance across calls:
+
+```csharp
+public class TransactionalMailer : MailerContextAbstract, ITransactionalMailer
+{
+    public override void OnBeforeSend(IServiceProvider serviceProvider)
+    {
+        // Override the SMTP server for all emails sent by this context
+        this.SmtpConfigOverride = new SMTPConfigModel
+        {
+            Host = "smtp.transactional-provider.com",
+            Port = 587,
+            UseSSL = true,
+            DoAuthenticate = true,
+            Username = "api-key",
+            Password = "secret"
+        };
+    }
+
+    public IMailerContextResult SendReceipt(string email, ReceiptModel receipt)
+    {
+        return HtmlMail(
+            new EmailAddressModel("Customer", email),
+            "Your Receipt",
+            receipt);
+    }
+}
+```
+
+When `SmtpConfigOverride` is set the mailer will use the given config instead of the globally registered one for that specific send operation. If it is `null` (the default), the global configuration is used.
+
+#### Configuring the MailKit SmtpClient per mailer context
+
+If you need full control over the MailKit `SmtpClient` before it connects, override `OnConfigureSmtpClient` in your mailer context. This gives you access to all properties on the `SmtpClient` class, such as `ServerCertificateValidationCallback`, `ClientCertificates`, `ProxyClient`, `LocalDomain`, `Timeout`, and more.
+
+```csharp
+using MailKit.Net.Smtp;
+
+public class SecureMailer : MailerContextAbstract, ISecureMailer
+{
+    public override void OnConfigureSmtpClient(SmtpClient client)
+    {
+        // Accept all certificates (for development/testing only!)
+        client.ServerCertificateValidationCallback = (sender, certificate, chain, errors) => true;
+
+        // Remove specific authentication mechanisms
+        client.AuthenticationMechanisms.Remove("XOAUTH2");
+
+        // Set a custom timeout
+        client.Timeout = 30000;
+    }
+
+    public IMailerContextResult SendSecureMail(string email)
+    {
+        return HtmlMail(
+            new EmailAddressModel("Recipient", email),
+            "Secure Mail Test");
+    }
+}
+```
+
+`OnConfigureSmtpClient` is called right before the client connects to the SMTP server, so any changes you make here will apply to that connection. The default implementation does nothing, so existing mailer contexts are not affected.
+
+#### Configuring the SmtpClient at registration time
+
+All `AddAspNetCoreMailKitMailer` overloads accept an optional `Action<SmtpClient>` parameter that lets you configure the MailKit client once when it is created by the DI container. This is useful for settings that should apply globally to every send operation.
+
+```csharp
+// With IConfiguration
+services.AddAspNetCoreMailKitMailer(Configuration, client =>
+{
+    client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+    client.Timeout = 60000;
+});
+
+// With SMTPConfigModel
+services.AddAspNetCoreMailKitMailer(new SMTPConfigModel
+{
+    Host = "smtp.example.com",
+    Port = 587,
+    UseSSL = true
+}, client =>
+{
+    client.AuthenticationMechanisms.Remove("XOAUTH2");
+});
+
+// Client configuration only (SMTP settings provided elsewhere, e.g. via SmtpConfigOverride)
+services.AddAspNetCoreMailKitMailer(client =>
+{
+    client.Timeout = 30000;
+});
+```
 
 #### Tag Helper
 Ive created an tag helper based on the old approach of https://www.meziantou.net/inlining-a-stylesheet-using-a-taghelper-in-asp-net-core.htm

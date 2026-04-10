@@ -35,7 +35,7 @@ namespace AspNetCore.MailKitMailer
         {
             services = CheckForHttpClient(services);
             services.Configure<Models.SMTPConfigModel>(x => configuration.GetSection("MailKitMailer").Bind(x));
-            services.Configure<Models.MailerViewEngineOptions>(x => x = new Models.MailerViewEngineOptions());
+            services.AddOptions<Models.MailerViewEngineOptions>();
             services.AddScoped<IMailerViewEngine, MailerViewEngine>();
             services.AddScoped<IMailClient, MailClient>();
             services.AddScoped<IMailkitSMTPClient>(x => {
@@ -71,7 +71,7 @@ namespace AspNetCore.MailKitMailer
                     }
                 }); 
             });
-            services.Configure<Models.MailerViewEngineOptions>(x => x = new Models.MailerViewEngineOptions());
+            services.AddOptions<Models.MailerViewEngineOptions>();
             services.AddScoped<IMailerViewEngine, MailerViewEngine>();
             services.AddScoped<IMailClient, MailClient>();
             services.AddScoped<IMailkitSMTPClient>(x => {
@@ -104,21 +104,19 @@ namespace AspNetCore.MailKitMailer
         public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, string fromAddress, string fromName, string host, string username, string password, int port, bool UseSSL, Action<SmtpClient>? configureClient = null)
         {
             services = CheckForHttpClient(services);
-            services.Configure<Models.SMTPConfigModel>(x => x = new Models.SMTPConfigModel()
-            {
-                FromAddress = new Models.EmailAddressModel()
+            services.Configure<Models.SMTPConfigModel>(x => {
+                x.FromAddress = new Models.EmailAddressModel()
                 {
                     Name = fromName,
                     Email = fromAddress,
-                    
-                },
-                Host = host,
-                Port = port,
-                UseSSL = UseSSL,
-                Username = username,
-                Password = password
+                };
+                x.Host = host;
+                x.Port = port;
+                x.UseSSL = UseSSL;
+                x.Username = username;
+                x.Password = password;
             });
-            services.Configure<Models.MailerViewEngineOptions>(x => x = new Models.MailerViewEngineOptions());
+            services.AddOptions<Models.MailerViewEngineOptions>();
             services.AddScoped<IMailerViewEngine, MailerViewEngine>();
             services.AddScoped<IMailClient, MailClient>();
             services.AddScoped<IMailkitSMTPClient>(x => {
@@ -129,6 +127,29 @@ namespace AspNetCore.MailKitMailer
                     configureClient(client);
                 }
 
+                return client as IMailkitSMTPClient;
+            });
+
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the ASP net core mail kit mailer with a client configuration action only.
+        /// SMTP settings should be provided via IConfiguration or SMTPConfigModel separately.
+        /// </summary>
+        /// <param name="services">The services.</param>
+        /// <param name="configureClient">Action to configure the smtp client.</param>
+        /// <returns></returns>
+        public static IServiceCollection AddAspNetCoreMailKitMailer(this IServiceCollection services, Action<SmtpClient> configureClient)
+        {
+            services = CheckForHttpClient(services);
+            services.AddOptions<Models.SMTPConfigModel>();
+            services.AddOptions<Models.MailerViewEngineOptions>();
+            services.AddScoped<IMailerViewEngine, MailerViewEngine>();
+            services.AddScoped<IMailClient, MailClient>();
+            services.AddScoped<IMailkitSMTPClient>(x => {
+                MailkitSMTPClient client = new MailkitSMTPClient();
+                configureClient(client);
                 return client as IMailkitSMTPClient;
             });
 

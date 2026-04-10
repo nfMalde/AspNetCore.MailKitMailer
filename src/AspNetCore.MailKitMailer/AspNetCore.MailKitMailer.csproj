@@ -12,9 +12,12 @@
     <PackageTags>Mailer, NetCore, .NET Core, MailKit, MimeKit, HtmlMail, EMail, MailClient</PackageTags>
     <PackageReleaseNotes>
 <![CDATA[
-* Added CID (Content-ID) support for inline/embedded images in HTML emails.
-* New AddLinkedResource methods on IAttachmentCollection for file paths, byte arrays, and URLs.
-* Reference embedded images in your views using: <img src="cid:your-content-id" />
+* SMTP configuration override per mailer context via SmtpConfigOverride property.
+* OnConfigureSmtpClient hook to configure the full MailKit SmtpClient per context (certificates, timeouts, auth mechanisms, proxy, etc.).
+* New AddAspNetCoreMailKitMailer(Action<SmtpClient>) overload for global client configuration.
+* Refactored MailClient internals to reduce code duplication.
+* Updated all dependencies to latest versions (MailKit 4.15.1, Microsoft.* 10.0.5).
+* Fixed nullable warnings in MailClient.
 ]]>
 	</PackageReleaseNotes>
     <Description>
@@ -25,18 +28,18 @@ A slim and simple client to handle HTML emails in .NET 10+ for MailKit. This cli
 	</Description>
     <Copyright>2024 Malte Peters</Copyright>
 	<PackageReadmeFile>README.MD</PackageReadmeFile>
-	<Version>2.2.1</Version>
+	<Version>2.3.0</Version>
 
   </PropertyGroup>
 
   <ItemGroup>
 	<None Include="..\..\README.MD" Pack="true" PackagePath="\" />
     <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
-    <PackageReference Include="MailKit" Version="4.14.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
+    <PackageReference Include="MailKit" Version="4.15.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.5" />
   </ItemGroup>
 
 </Project>

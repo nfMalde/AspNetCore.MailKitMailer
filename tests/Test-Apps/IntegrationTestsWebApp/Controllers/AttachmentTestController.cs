@@ -1,4 +1,5 @@
 ﻿using AspNetCore.MailKitMailer.Domain;
+using AspNetCore.MailKitMailer.Models;
 using IntegrationTestsWebApp.Mailer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -203,6 +204,46 @@ namespace IntegrationTestsWebApp.Controllers
 
             await this.client.SendAsync<ITestMailer>(x =>
                 x.Test_LinkedResource_UrlAsync(downloadUri, "testimage")
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("smtp-override")]
+        public IActionResult TestSmtpOverride([FromQuery] string host, [FromQuery] int port)
+        {
+            var overrideConfig = new SMTPConfigModel
+            {
+                Host = host,
+                Port = port,
+                UseSSL = false,
+                DoAuthenticate = false,
+                CheckCertificateRevocation = false,
+                FromAddress = new EmailAddressModel("Override Sender", "override@example.com")
+            };
+
+            this.client.Send<ITestMailer>(x =>
+                x.Test_SmtpOverride(overrideConfig)
+            );
+
+            return Ok();
+        }
+
+        [HttpGet("smtp-override-async")]
+        public async Task<IActionResult> TestSmtpOverrideAsync([FromQuery] string host, [FromQuery] int port)
+        {
+            var overrideConfig = new SMTPConfigModel
+            {
+                Host = host,
+                Port = port,
+                UseSSL = false,
+                DoAuthenticate = false,
+                CheckCertificateRevocation = false,
+                FromAddress = new EmailAddressModel("Override Sender", "override@example.com")
+            };
+
+            await this.client.SendAsync<ITestMailer>(x =>
+                x.Test_SmtpOverrideAsync(overrideConfig)
             );
 
             return Ok();
