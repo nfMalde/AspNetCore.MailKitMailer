@@ -122,19 +122,29 @@ namespace AspNetCore.MailKitMailerTests
             smtpClientMock.Object.AuthenticationMechanisms.Add("XOAUTH2");
 
             var callOrder = new System.Collections.Generic.List<string>();
+            var configureCalledBeforeConnect = false;
+            ClientConfigMailer? mailer = null;
 
             smtpClientMock.Setup(x => x.ConnectAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<SecureSocketOptions>(), It.IsAny<CancellationToken>()))
-                .Callback(() => callOrder.Add("Connect"))
+                .Callback(() =>
+                {
+                    configureCalledBeforeConnect = mailer != null && mailer.ConfigureClientCalled;
+                    callOrder.Add("Connect");
+                })
                 .Returns(Task.CompletedTask);
 
             IServiceProvider provider = this.services.BuildServiceProvider();
             IMailClient mailClient = provider.GetService<IMailClient>()!;
+
+            mailer = provider.GetService<IClientConfigMailer>() as ClientConfigMailer;
+            Assert.NotNull(mailer);
 
             mailClient.Send<IClientConfigMailer>(x => x.Html_WithClientConfig());
 
             // OnConfigureSmtpClient removed XOAUTH2 before connect was called
             Assert.DoesNotContain("XOAUTH2", smtpClientMock.Object.AuthenticationMechanisms);
             Assert.Contains("Connect", callOrder);
+            Assert.True(configureCalledBeforeConnect);
         }
 
         [Fact]
