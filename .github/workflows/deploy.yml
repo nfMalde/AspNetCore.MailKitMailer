@@ -34,24 +34,24 @@ jobs:
       id: newversion
       shell: pwsh
       run: |
-            $currentVersion = git describe --abbrev=0 --tags --match "v[0-9]*.[0-9]*.[0-9]*-Release"
+            $currentVersion = git describe --abbrev=0 --tags --match "v.[0-9]*.[0-9]*.[0-9]*-Release"
 
             if ($currentVersion -ne $null) {
-              $v = $currentVersion.Split('-')[0].TrimStart('v')
+              $v = $currentVersion.Split('-')[0].TrimStart('v', '.')
               Write-Output "RELEASE: New Version: $($v)"
               Write-Output "version=$($v)" >> $Env:GITHUB_OUTPUT
               Write-Output "tag=$($currentVersion)" >> $Env:GITHUB_OUTPUT
             } else {
     
-                $currentVersion = git describe --abbrev=0 --tags --match "v[0-9]*.[0-9]*.[0-9]*" 
+                $currentVersion = git describe --abbrev=0 --tags --match "v.[0-9]*.[0-9]*.[0-9]*" 
                 $versionParts = $currentVersion.Split('-')
                 $v = $versionParts[0]
                 $increment = 1
 
                 $vparts = $v.Split('.')
+                $vparts = $vparts | Where-Object { $_ -ne 'v' -and $_ -ne '' }
                 $vparts[2] = "$([int]$vparts[2] + [int]$increment)"
                 $v = $vparts -join '.'
-                $v = "$($v)".TrimStart("v")
                 Write-Output "New Version: $($v)"
                 Write-Output "version=$($v)" >> $Env:GITHUB_OUTPUT
                 Write-Output "tag=" >> $Env:GITHUB_OUTPUT
